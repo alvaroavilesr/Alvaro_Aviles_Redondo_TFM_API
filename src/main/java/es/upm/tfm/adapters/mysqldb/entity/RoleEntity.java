@@ -1,5 +1,6 @@
 package es.upm.tfm.adapters.mysqldb.entity;
 
+import es.upm.tfm.domain.models.Role;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @Builder
 @Entity
+@ToString
 @Table(name = "roles")
 public class RoleEntity {
 
@@ -17,4 +19,5 @@ public class RoleEntity {
     private String roleName;
     @Column(name = "roleDescription")
     private String roleDescription;
+
 }

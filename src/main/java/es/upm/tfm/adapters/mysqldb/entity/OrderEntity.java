@@ -11,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
+@ToString
 @Table(name = "Orders")
 public class OrderEntity {
     @Id

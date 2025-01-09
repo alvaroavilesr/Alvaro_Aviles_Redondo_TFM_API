@@ -1,5 +1,6 @@
 package es.upm.tfm.adapters.mysqldb.entity;
 
+import es.upm.tfm.domain.models.Item;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
+@ToString
 @Table(name = "Items")
 public class ItemEntity {
 
@@ -38,4 +40,5 @@ public class ItemEntity {
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private CategoryEntity category;
+
 }

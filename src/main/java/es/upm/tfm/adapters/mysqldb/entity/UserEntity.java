@@ -12,6 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
+@ToString
 @Table(name = "users")
 public class UserEntity {
 
@@ -53,4 +54,6 @@ public class UserEntity {
         this.userLastName = userLastName;
         this.role = role;
     }
+
+
 }
