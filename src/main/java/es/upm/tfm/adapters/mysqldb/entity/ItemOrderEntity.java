@@ -1,6 +1,5 @@
 package es.upm.tfm.adapters.mysqldb.entity;
 
-import es.upm.tfm.domain.models.ItemOrder;
 import lombok.*;
 
 import jakarta.persistence.*;

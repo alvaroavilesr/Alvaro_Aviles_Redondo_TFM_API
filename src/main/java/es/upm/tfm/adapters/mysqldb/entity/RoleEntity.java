@@ -1,6 +1,5 @@
 package es.upm.tfm.adapters.mysqldb.entity;
 
-import es.upm.tfm.domain.models.Role;
 import lombok.*;
 import jakarta.persistence.*;
 
