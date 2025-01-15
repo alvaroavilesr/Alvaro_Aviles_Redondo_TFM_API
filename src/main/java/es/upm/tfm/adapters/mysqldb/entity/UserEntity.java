@@ -1,8 +1,8 @@
 package es.upm.tfm.adapters.mysqldb.entity;
 
 import lombok.*;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.util.List;
 import java.util.Set;
 

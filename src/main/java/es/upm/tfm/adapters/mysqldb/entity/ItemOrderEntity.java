@@ -2,7 +2,7 @@ package es.upm.tfm.adapters.mysqldb.entity;
 
 import lombok.*;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 @Getter
 @Setter
 @AllArgsConstructor
