@@ -5,7 +5,6 @@ import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.persistence.JwtPersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.response.JwtResponse;
-import es.upm.tfm.adapters.mysqldb.response.UserResponse;
 import es.upm.tfm.adapters.mysqldb.respository.UserRepository;
 import es.upm.tfm.utils.JwtUtil;
 import org.junit.jupiter.api.Assertions;
@@ -15,9 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.authentication.AuthenticationManager;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -27,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class JwtPersistenceMysqlTest {
+class JwtPersistenceMysqlTest {
 
     @Mock
     private JwtUtil jwtUtil;
@@ -69,7 +68,7 @@ public class JwtPersistenceMysqlTest {
     }
 
     @Test
-    void testCreateJwtToken_UserNotFoundException() throws Exception {
+    void testCreateJwtToken_UserNotFoundException() {
         when(userRepository.findById("User")).thenReturn(Optional.empty());
         when(userRepository.findById("User")).thenReturn(Optional.empty());
 

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class JwtServiceTest {
+class JwtServiceTest {
 
     @Mock
     private JwtPersistence jwtPersistence;

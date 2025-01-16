@@ -19,7 +19,7 @@ import java.util.Set;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class JwtControllerTest {
+class JwtControllerTest {
 
     @Mock
     private JwtService jwtService;
@@ -60,17 +60,6 @@ public class JwtControllerTest {
 
     @Test
     void testCreateJwtToken_Error() throws Exception, UserNotFoundException {
-
-        RoleResponse roleResponse = new RoleResponse("Admin",  "Admin role");
-        Set<RoleResponse> roleResponses = new HashSet<>();
-        roleResponses.add(roleResponse);
-        UserResponse userResponse = new UserResponse(
-                "User",
-                "example",
-                "example",
-                "user@example.com",
-                roleResponses
-        );
 
         JwtRequestDTO jwtRequestDTO = new JwtRequestDTO("User", "123");
 
