@@ -25,22 +25,22 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-@Repository("JwtPersistence")
+@Repository
 public class JwtPersistenceMysql implements JwtPersistence, UserDetailsService {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
-    private UserRepository userRepository;
+    public JwtPersistenceMysql(JwtUtil jwtUtil, UserRepository userRepository, @Lazy AuthenticationManager authenticationManager) {
+        this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+    }
 
-    @Autowired
-    @Lazy
-    private AuthenticationManager authenticationManager;
-
-    ModelMapper modelMapper = new ModelMapper();
-
-    public JwtResponse createJwtToken(JwtRequestDTO jwtRequest) throws Exception, UserNotFoundException {
+    public JwtResponse createJwtToken(JwtRequestDTO jwtRequest) throws UserNotFoundException, Exception {
         String userName = jwtRequest.getUserName();
         String userPassword = jwtRequest.getUserPassword();
         authenticate(userName, userPassword);
@@ -67,7 +67,7 @@ public class JwtPersistenceMysql implements JwtPersistence, UserDetailsService {
         }
     }
 
-    private Set getAuthority(UserEntity user) {
+    private Set<SimpleGrantedAuthority> getAuthority(UserEntity user) {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         user.getRole().forEach(role -> {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));

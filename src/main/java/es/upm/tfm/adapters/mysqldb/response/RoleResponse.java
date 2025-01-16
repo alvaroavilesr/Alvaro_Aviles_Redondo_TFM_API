@@ -8,8 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
-public class JwtResponse {
-    private UserResponse userResponse;
-    private String jwtToken;
+public class RoleResponse {
 
+    private String roleName;
+    private String roleDescription;
 }

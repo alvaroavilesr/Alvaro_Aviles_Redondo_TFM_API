@@ -12,13 +12,17 @@ import java.util.Map;
 
 @ControllerAdvice
 public class UserControllerAdvisor {
+
+    private final String TIMESTAMP = "timestamp";
+    private final String MESSAGE = "message";
+
     @ExceptionHandler(UserAlreadyExistingException.class)
     public ResponseEntity<Object> handleUserAlreadyExistingException(
             UserAlreadyExistingException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "An user with this username already exists");
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE, "An user with this username already exists");
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
@@ -28,8 +32,8 @@ public class UserControllerAdvisor {
             UserNotFoundException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "User not found");
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE, "User not found");
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -39,8 +43,8 @@ public class UserControllerAdvisor {
             UsersNotFoundException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "Users not found");
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE, "Users not found");
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -50,8 +54,8 @@ public class UserControllerAdvisor {
             UserNameNotValid ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "User not found");
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE, "User not found");
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
