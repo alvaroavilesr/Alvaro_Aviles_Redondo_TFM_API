@@ -13,8 +13,8 @@ import java.util.Map;
 @ControllerAdvice
 public class UserControllerAdvisor {
 
-    private final String TIMESTAMP = "timestamp";
-    private final String MESSAGE = "message";
+    private static final String TIMESTAMP = "timestamp";
+    private static final String MESSAGE = "message";
 
     @ExceptionHandler(UserAlreadyExistingException.class)
     public ResponseEntity<Object> handleUserAlreadyExistingException(

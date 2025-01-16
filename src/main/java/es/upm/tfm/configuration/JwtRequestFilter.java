@@ -26,7 +26,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final JwtPersistenceMysql jwtService;
-    private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
+    private static final Logger jwtLogger = LoggerFactory.getLogger(JwtRequestFilter.class);
 
     @Autowired
     public JwtRequestFilter (JwtUtil  jwtUtil, @Lazy JwtPersistenceMysql jwtService) {
@@ -47,12 +47,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                logger.error("Unable to get JWT Token", e);
+                jwtLogger.error("Unable to get JWT Token", e);
             } catch (ExpiredJwtException e) {
-                logger.warn("JWT Token has expired", e);
+                jwtLogger.warn("JWT Token has expired", e);
             }
         } else {
-            logger.warn("JWT token does not start with Bearer");
+            jwtLogger.warn("JWT token does not start with Bearer");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
