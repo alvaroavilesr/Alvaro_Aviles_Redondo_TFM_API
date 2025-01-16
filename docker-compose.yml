@@ -5,7 +5,7 @@ services:
     image: mysql:latest
     container_name: MySQL-container
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${DATASOURCE_PASSWORD}
       MYSQL_DATABASE: app_db
       MYSQL_USER: db_user
       MYSQL_PASSWORD: 1234Pass

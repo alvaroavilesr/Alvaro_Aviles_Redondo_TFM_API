@@ -14,7 +14,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "UH>GHIUjhGjgkFthHOgyTyDFHyiJTRfyrJD&%=";
+    private static final String SECRET_KEY = System.getenv("JWT_SECRET_KEY");
 
     private static final int TOKEN_VALIDITY = 3600 * 5;
 
