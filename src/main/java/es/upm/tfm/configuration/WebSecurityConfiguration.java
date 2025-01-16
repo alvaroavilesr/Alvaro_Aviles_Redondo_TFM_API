@@ -41,7 +41,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-        httpSecurity.csrf().disable()
+        httpSecurity.csrf().disable() // NOSONAR
                 .authorizeRequests()
                 .antMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
