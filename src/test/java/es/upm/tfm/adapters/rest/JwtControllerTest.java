@@ -28,7 +28,7 @@ class JwtControllerTest {
     private JwtController jwtController;
 
     @Test
-    void testCreateJwtToken_Success() throws Exception, UserNotFoundException {
+    void testCreateJwtTokenSuccess() throws Exception, UserNotFoundException {
 
         RoleResponse roleResponse = new RoleResponse("Admin",  "Admin role");
         Set<RoleResponse> roleResponses = new HashSet<>();
@@ -59,7 +59,7 @@ class JwtControllerTest {
     }
 
     @Test
-    void testCreateJwtToken_Error() throws Exception, UserNotFoundException {
+    void testCreateJwtTokenError() throws Exception, UserNotFoundException {
 
         JwtRequestDTO jwtRequestDTO = new JwtRequestDTO("User", "123");
 

@@ -25,7 +25,7 @@ class JwtPersistenceTest {
 
 
     @Test
-    void testCreateJwtToken_Success() throws Exception, UserNotFoundException {
+    void testCreateJwtTokenSuccess() throws Exception, UserNotFoundException {
         JwtRequestDTO jwtRequestDTO = new JwtRequestDTO("User", "password");
         JwtResponse expectedResponse = new JwtResponse(null, "token123");
 
@@ -38,7 +38,7 @@ class JwtPersistenceTest {
     }
 
     @Test
-    void testCreateJwtToken_UserNotFoundException() throws Exception, UserNotFoundException {
+    void testCreateJwtTokenUserNotFoundException() throws Exception, UserNotFoundException {
         JwtRequestDTO jwtRequestDTO = new JwtRequestDTO("NonExistentUser", "password");
 
         when(jwtPersistence.createJwtToken(jwtRequestDTO)).thenThrow(UserNotFoundException.class);

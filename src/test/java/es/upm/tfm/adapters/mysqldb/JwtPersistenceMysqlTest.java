@@ -53,7 +53,7 @@ class JwtPersistenceMysqlTest {
     }
 
     @Test
-    void testCreateJwtToken_Success() throws Exception, UserNotFoundException {
+    void testCreateJwtTokenSuccess() throws Exception, UserNotFoundException {
         when(userRepository.findById("User")).thenReturn(Optional.of(userEntity));
         when(userRepository.findById("User")).thenReturn(Optional.of(userEntity));
         when(jwtUtil.generateToken(any(UserDetails.class))).thenReturn("generatedToken");
@@ -68,7 +68,7 @@ class JwtPersistenceMysqlTest {
     }
 
     @Test
-    void testCreateJwtToken_UserNotFoundException() {
+    void testCreateJwtTokenUserNotFoundException() {
         when(userRepository.findById("User")).thenReturn(Optional.empty());
         when(userRepository.findById("User")).thenReturn(Optional.empty());
 
@@ -80,7 +80,7 @@ class JwtPersistenceMysqlTest {
     }
 
     @Test
-    void testLoadUserByUsername_Success() {
+    void testLoadUserByUsernameSuccess() {
         when(userRepository.findById("User")).thenReturn(Optional.of(userEntity));
 
         UserDetails userDetails = jwtPersistenceMysql.loadUserByUsername("User");
@@ -92,7 +92,7 @@ class JwtPersistenceMysqlTest {
     }
 
     @Test
-    void testLoadUserByUsername_UsernameNotFoundException() {
+    void testLoadUserByUsernameUsernameNotFoundException() {
         when(userRepository.findById("User")).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class, () -> {
