@@ -1,9 +1,9 @@
 package es.upm.tfm.adapters.mysqldb.persistence;
 
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
+import es.upm.tfm.adapters.mysqldb.dto.RoleDescriptionDTO;
 import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.role.*;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.adapters.mysqldb.respository.RoleRepository;
 import es.upm.tfm.adapters.mysqldb.respository.UserRepository;
@@ -12,8 +12,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Repository
 public class RolePersistenceMysql implements RolePersistence {
@@ -41,5 +44,43 @@ public class RolePersistenceMysql implements RolePersistence {
         }
         RoleEntity role = modelMapper.map(roleDTO, RoleEntity.class);
         return modelMapper.map(roleRepository.save(role),RoleResponse.class);
+    }
+
+    public List<RoleResponse> getRoles () throws RolesNotFoundException {
+        List<RoleEntity> roles = roleRepository.findAll();
+
+        if (roles.isEmpty()){
+            throw new RolesNotFoundException();
+        }else{
+            return roles.stream()
+                    .map(rol -> modelMapper.map(rol, RoleResponse.class))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Transactional
+    public RoleResponse getRole(String roleName) throws RoleNotFoundException {
+        return roleRepository.findById(roleName)
+                .map(role -> modelMapper.map(role, RoleResponse.class))
+                .orElseThrow(() -> new RoleNotFoundException(roleName));
+    }
+
+    public RoleResponse deleteRole(String roleName) throws RoleNotFoundException, RoleAlreadyAssignedException {
+        boolean roleNotAssignedToAnyUser = userRepository.findAll().stream()
+                .noneMatch(user -> Objects.equals(user.getRole().iterator().next().getRoleName(), roleName));
+        if(!roleNotAssignedToAnyUser){
+            throw new RoleAlreadyAssignedException(roleName);
+        }
+        RoleResponse response = roleRepository.findById(roleName)
+                .map(role -> modelMapper.map(role, RoleResponse.class))
+                .orElseThrow(() -> new RoleNotFoundException(roleName));
+        roleRepository.deleteById(roleName);
+        return response;
+    }
+
+    public RoleResponse updateRoleDescription(RoleDescriptionDTO roleDescriptionDTO, String roleName) throws RoleNotFoundException {
+        RoleEntity role = roleRepository.findById(roleName).orElseThrow(() -> new RoleNotFoundException(roleName));
+        role.setRoleDescription(roleDescriptionDTO.getRoleDescription());
+        return modelMapper.map(roleRepository.save(role), RoleResponse.class);
     }
 }
