@@ -64,7 +64,7 @@ public class RoleController {
     @Operation(summary = "GET HTTP method endpoint for getting a role - [ADMIN]")
     @GetMapping("/role/{roleName}")
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<RoleResponse> getRole(@PathVariable String roleName) throws RolesNotFoundException, RoleNotFoundException {
+    public ResponseEntity<RoleResponse> getRole(@PathVariable String roleName) throws RoleNotFoundException {
         return new ResponseEntity<>(roleService.getRole(roleName),HttpStatus.OK);
     }
 
