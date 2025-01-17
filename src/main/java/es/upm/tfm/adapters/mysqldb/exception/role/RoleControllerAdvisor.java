@@ -37,4 +37,15 @@ public class RoleControllerAdvisor {
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(RolesNotFoundException.class)
+    public ResponseEntity<Object> handleRolesNotFoundException(
+            RolesNotFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", "No roles found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 }

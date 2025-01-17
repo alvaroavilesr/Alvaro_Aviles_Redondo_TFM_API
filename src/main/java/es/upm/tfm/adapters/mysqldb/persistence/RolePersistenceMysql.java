@@ -4,6 +4,7 @@ import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
 import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.role.RolesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.adapters.mysqldb.respository.RoleRepository;
 import es.upm.tfm.adapters.mysqldb.respository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class RolePersistenceMysql implements RolePersistence {
@@ -41,5 +43,17 @@ public class RolePersistenceMysql implements RolePersistence {
         }
         RoleEntity role = modelMapper.map(roleDTO, RoleEntity.class);
         return modelMapper.map(roleRepository.save(role),RoleResponse.class);
+    }
+
+    public List<RoleResponse> getRoles () throws RolesNotFoundException {
+        List<RoleEntity> roles = roleRepository.findAll();
+
+        if (roles.isEmpty()){
+            throw new RolesNotFoundException();
+        }else{
+            return roles.stream()
+                    .map(rol -> modelMapper.map(rol, RoleResponse.class))
+                    .collect(Collectors.toList());
+        }
     }
 }
