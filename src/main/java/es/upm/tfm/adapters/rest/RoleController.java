@@ -2,6 +2,7 @@ package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RolesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
@@ -54,5 +55,18 @@ public class RoleController {
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<List<RoleResponse>> getRoles() throws RolesNotFoundException {
         return new ResponseEntity<>(roleService.getRoles(),HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Role successfully retrieved"),
+            @ApiResponse(responseCode = "404", description = "No role found in the database"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "GET HTTP method endpoint for getting a role - [ADMIN]")
+    @GetMapping("/role/{roleName}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<RoleResponse> getRole(@PathVariable String roleName) throws RolesNotFoundException, RoleNotFoundException {
+        return new ResponseEntity<>(roleService.getRole(roleName),HttpStatus.OK);
     }
 }
