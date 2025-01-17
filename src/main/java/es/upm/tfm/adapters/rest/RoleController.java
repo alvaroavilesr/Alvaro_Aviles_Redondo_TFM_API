@@ -1,10 +1,7 @@
 package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RolesNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.role.*;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.domain.services.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,5 +65,18 @@ public class RoleController {
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<RoleResponse> getRole(@PathVariable String roleName) throws RolesNotFoundException, RoleNotFoundException {
         return new ResponseEntity<>(roleService.getRole(roleName),HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Role successfully deleted"),
+            @ApiResponse(responseCode = "400", description = "No role found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "DELETE HTTP method endpoint for deleting a role by its role name - [ADMIN]")
+    @DeleteMapping("/role/{roleName}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<RoleResponse> deleteRole(@PathVariable String roleName) throws RoleNotFoundException, RoleAlreadyAssignedException {
+        return new ResponseEntity<>(roleService.deleteRole(roleName),HttpStatus.OK);
     }
 }

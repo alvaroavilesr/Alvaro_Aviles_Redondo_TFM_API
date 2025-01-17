@@ -2,10 +2,7 @@ package es.upm.tfm.adapters.mysqldb.persistence;
 
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
 import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RolesNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.role.*;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.adapters.mysqldb.respository.RoleRepository;
 import es.upm.tfm.adapters.mysqldb.respository.UserRepository;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
@@ -64,5 +62,18 @@ public class RolePersistenceMysql implements RolePersistence {
         return roleRepository.findById(roleName)
                 .map(role -> modelMapper.map(role, RoleResponse.class))
                 .orElseThrow(() -> new RoleNotFoundException(roleName));
+    }
+
+    public RoleResponse deleteRole(String roleName) throws RoleNotFoundException, RoleAlreadyAssignedException {
+        boolean roleNotAssignedToAnyUser = userRepository.findAll().stream()
+                .noneMatch(user -> Objects.equals(user.getRole().iterator().next().getRoleName(), roleName));
+        if(!roleNotAssignedToAnyUser){
+            throw new RoleAlreadyAssignedException(roleName);
+        }
+        RoleResponse response = roleRepository.findById(roleName)
+                .map(role -> modelMapper.map(role, RoleResponse.class))
+                .orElseThrow(() -> new RoleNotFoundException(roleName));
+        roleRepository.deleteById(roleName);
+        return response;
     }
 }

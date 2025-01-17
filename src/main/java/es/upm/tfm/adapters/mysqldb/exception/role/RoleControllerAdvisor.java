@@ -59,4 +59,15 @@ public class RoleControllerAdvisor {
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(RoleAlreadyAssignedException.class)
+    public ResponseEntity<Object> handleRoleAlreadyAssigned(
+            RoleAlreadyAssignedException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", "Role already assigned to an user");
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 }
