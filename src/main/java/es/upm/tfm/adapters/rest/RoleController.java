@@ -1,6 +1,7 @@
 package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
+import es.upm.tfm.adapters.mysqldb.dto.RoleDescriptionDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.*;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.domain.services.RoleService;
@@ -78,5 +79,18 @@ public class RoleController {
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<RoleResponse> deleteRole(@PathVariable String roleName) throws RoleNotFoundException, RoleAlreadyAssignedException {
         return new ResponseEntity<>(roleService.deleteRole(roleName),HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Role description successfully updated"),
+            @ApiResponse(responseCode = "400", description = "Mandatory fields not supplied"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "PUT HTTP method endpoint for updating the description of a determined role - [ADMIN]")
+    @PutMapping("/role/{roleName}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<RoleResponse> updateRoleDescription(@RequestBody RoleDescriptionDTO roleDescriptionDTO, @PathVariable String roleName) throws RoleNotFoundException {
+        return new ResponseEntity<>(roleService.updateRoleDescription(roleDescriptionDTO, roleName),HttpStatus.OK);
     }
 }

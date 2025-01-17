@@ -1,6 +1,7 @@
 package es.upm.tfm.adapters.mysqldb.persistence;
 
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
+import es.upm.tfm.adapters.mysqldb.dto.RoleDescriptionDTO;
 import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
 import es.upm.tfm.adapters.mysqldb.exception.role.*;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
@@ -75,5 +76,11 @@ public class RolePersistenceMysql implements RolePersistence {
                 .orElseThrow(() -> new RoleNotFoundException(roleName));
         roleRepository.deleteById(roleName);
         return response;
+    }
+
+    public RoleResponse updateRoleDescription(RoleDescriptionDTO roleDescriptionDTO, String roleName) throws RoleNotFoundException {
+        RoleEntity role = roleRepository.findById(roleName).orElseThrow(() -> new RoleNotFoundException(roleName));
+        role.setRoleDescription(roleDescriptionDTO.getRoleDescription());
+        return modelMapper.map(roleRepository.save(role), RoleResponse.class);
     }
 }

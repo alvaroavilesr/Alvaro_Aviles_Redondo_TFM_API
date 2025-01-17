@@ -1,6 +1,7 @@
 package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
+import es.upm.tfm.adapters.mysqldb.dto.RoleDescriptionDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.*;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.domain.persistence_ports.RolePersistence;
@@ -35,5 +36,9 @@ public class RoleService {
 
     public RoleResponse deleteRole(String roleName) throws RoleNotFoundException, RoleAlreadyAssignedException {
         return this.rolePersistence.deleteRole(roleName);
+    }
+
+    public RoleResponse updateRoleDescription(RoleDescriptionDTO roleDescriptionDTO, String roleName) throws RoleNotFoundException {
+        return this.rolePersistence.updateRoleDescription(roleDescriptionDTO, roleName);
     }
 }

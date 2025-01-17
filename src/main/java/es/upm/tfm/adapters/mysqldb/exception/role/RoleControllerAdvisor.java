@@ -43,8 +43,8 @@ public class RoleControllerAdvisor {
             RolesNotFoundException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "No roles found");
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE, "No roles found");
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -54,8 +54,8 @@ public class RoleControllerAdvisor {
             RoleNotFoundException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "Role not found");
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE, "Role not found");
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -65,8 +65,8 @@ public class RoleControllerAdvisor {
             RoleAlreadyAssignedException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "Role already assigned to an user");
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE, "Role already assigned to an user");
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

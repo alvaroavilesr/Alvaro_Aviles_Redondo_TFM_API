@@ -1,6 +1,7 @@
 package es.upm.tfm.domain.persistence_ports;
 
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
+import es.upm.tfm.adapters.mysqldb.dto.RoleDescriptionDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.*;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,6 @@ public interface RolePersistence {
     RoleResponse getRole(String roleName) throws RoleNotFoundException;
 
     RoleResponse deleteRole(String roleName) throws RoleNotFoundException, RoleAlreadyAssignedException;
+
+    RoleResponse updateRoleDescription(RoleDescriptionDTO roleDescriptionDTO, String roleName) throws RoleNotFoundException;
 }
