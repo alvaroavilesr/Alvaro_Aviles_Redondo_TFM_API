@@ -58,6 +58,7 @@ jobs:
           -Dsonar.projectKey=alvaroavilesr_Alvaro_Aviles_Redondo_TFM_API
           -Dsonar.organization=alvaroavilesr
           -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

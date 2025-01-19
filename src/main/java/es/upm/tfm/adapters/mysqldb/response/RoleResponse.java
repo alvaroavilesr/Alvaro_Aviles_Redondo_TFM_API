@@ -22,4 +22,9 @@ public class RoleResponse {
         return Objects.equals(roleName, that.roleName) &&
                 Objects.equals(roleDescription, that.roleDescription);
     }
+
+    @Override
+    public int hashCode() {
+        return roleName.hashCode();
+    }
 }
