@@ -45,8 +45,8 @@ jobs:
       - name: Install dependencies
         run: mvn install -DskipTests
 
-      - name: Run tests
-        run: mvn test
+      - name: Run tests and generate coverage report
+        run: mvn clean verify
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/testdb
           SPRING_DATASOURCE_USERNAME: root
