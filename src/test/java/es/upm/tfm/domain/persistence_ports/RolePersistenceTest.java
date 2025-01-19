@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class RolePersistenceTest {
+class RolePersistenceTest {
 
     @Mock
     private RolePersistence rolePersistence;
