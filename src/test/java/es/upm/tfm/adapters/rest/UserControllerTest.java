@@ -255,4 +255,51 @@ class UserControllerTest {
 
         verify(userService, times(1)).updateUser(updateUserDTO, "User1");
     }
+
+    @Test
+    public void testUpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.updateUserRole("User1", "User")).thenReturn(userResponse);
+
+        ResponseEntity<UserResponse> response = userController.updateUserRole("User1", "User");
+
+        assertEquals(userResponse, response.getBody());
+
+        verify(userService, times(1)).updateUserRole("User1", "User");
+    }
+
+    @Test
+    public void testUpdateUserRoleExceptionUserNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        when(userService.updateUserRole("User1", "User")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            userController.updateUserRole("User1", "User");
+        });
+
+        verify(userService, times(1)).updateUserRole("User1", "User");
+    }
+
+    @Test
+    public void testUpdateUserRoleExceptionRoleNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        when(userService.updateUserRole("User1", "User")).thenThrow(RoleNotFoundException.class);
+
+        Assertions.assertThrows(RoleNotFoundException.class, () -> {
+            userController.updateUserRole("User1", "User");
+        });
+
+        verify(userService, times(1)).updateUserRole("User1", "User");
+    }
+
+    @Test
+    public void testUpdateUserRoleExceptionUsernameNotValid() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        when(userService.updateUserRole("User1", "User")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            userController.updateUserRole("User1", "User");
+        });
+
+        verify(userService, times(1)).updateUserRole("User1", "User");
+    }
 }

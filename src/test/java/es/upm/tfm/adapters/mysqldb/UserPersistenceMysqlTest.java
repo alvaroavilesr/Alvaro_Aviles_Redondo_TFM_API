@@ -279,4 +279,53 @@ class UserPersistenceMysqlTest {
 
         Assertions.assertEquals(response, userResponse);
     }
+
+    @Test
+    public void UpdateUserRoleUserNotFound(){
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> {
+            userPersistenceMysql.updateUserRole("User1",  "User");
+        });
+    }
+
+    @Test
+    public void UpdateUserRoleUserNameNotValid(){
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Collections.emptySet(), null);
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+
+        assertThrows(UserNameNotValid.class, () -> {
+            userPersistenceMysql.updateUserRole("User1",  "User");
+        });
+    }
+
+    @Test
+    public void UpdateUserRoleRoleNotFoundException(){
+        RoleEntity role = new RoleEntity("User", "Role for users");
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+        Mockito.when(roleRepository.findById("User")).thenReturn(Optional.empty());
+
+        assertThrows(RoleNotFoundException.class, () -> {
+            userPersistenceMysql.updateUserRole("User1",  "User");
+        });
+    }
+
+    @Test
+    public void UpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        RoleEntity role = new RoleEntity("User", "Role for users");
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
+        RoleResponse roleResponse = new RoleResponse("User", "Role for users");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+        Mockito.when(roleRepository.findById("User")).thenReturn(Optional.of(role));
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+
+        UserResponse response = userPersistenceMysql.updateUserRole("User1",  "User");
+
+        Assertions.assertEquals(response, userResponse);
+    }
 }

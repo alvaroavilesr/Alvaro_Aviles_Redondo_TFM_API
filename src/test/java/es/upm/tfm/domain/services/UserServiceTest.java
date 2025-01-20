@@ -219,4 +219,43 @@ class UserServiceTest {
             userPersistence.updateUser(updateUserDTO, "User1");
         });
     }
+
+    @Test
+    public void testUpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.updateUserRole("User1", "User")).thenReturn(userResponse);
+
+        UserResponse response = userPersistence.updateUserRole("User1", "User");
+
+        assertEquals(userResponse, response);
+    }
+
+    @Test
+    public void testUpdateUserRoleExceptionUserNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        when(userService.updateUserRole("User1", "User")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            userPersistence.updateUserRole("User1", "User");
+        });
+    }
+
+    @Test
+    public void testUpdateUserRoleExceptionRoleNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        when(userService.updateUserRole("User1", "User")).thenThrow(RoleNotFoundException.class);
+
+        Assertions.assertThrows(RoleNotFoundException.class, () -> {
+            userPersistence.updateUserRole("User1", "User");
+        });
+    }
+
+    @Test
+    public void testUpdateUserRoleExceptionUsernameNotValid() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        when(userService.updateUserRole("User1", "User")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            userPersistence.updateUserRole("User1", "User");
+        });
+    }
 }
