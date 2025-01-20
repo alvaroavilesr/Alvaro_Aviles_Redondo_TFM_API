@@ -30,7 +30,7 @@ class RoleControllerTest {
     private RoleController roleController;
 
     @Test
-    public void testCreateRole() throws RoleNotValidException, RoleAlreadyExistingException {
+    void testCreateRole() throws RoleNotValidException, RoleAlreadyExistingException {
         RoleDTO roleDTO = new RoleDTO("Admin", "Admin role");
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
 
@@ -45,7 +45,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testCreateRoleExceptionNotValid() throws RoleNotValidException, RoleAlreadyExistingException {
+    void testCreateRoleExceptionNotValid() throws RoleNotValidException, RoleAlreadyExistingException {
         RoleDTO roleDTO = new RoleDTO("SuperAdmin", "Super admin user role");
 
         when(roleService.createRole(roleDTO)).thenThrow(RoleNotValidException.class);
@@ -58,7 +58,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testCreateRoleExceptionAlreadyExisting() throws RoleNotValidException, RoleAlreadyExistingException {
+    void testCreateRoleExceptionAlreadyExisting() throws RoleNotValidException, RoleAlreadyExistingException {
         RoleDTO roleDTO = new RoleDTO("SuperAdmin", "Super admin user role");
 
         when(roleService.createRole(roleDTO)).thenThrow(RoleAlreadyExistingException.class);
@@ -71,7 +71,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testGetRoles() throws RolesNotFoundException {
+    void testGetRoles() throws RolesNotFoundException {
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
         List<RoleResponse> roleResponses = Collections.singletonList(roleResponse);
 
@@ -86,7 +86,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testGetRolesExceptionNotFound() throws RolesNotFoundException {
+    void testGetRolesExceptionNotFound() throws RolesNotFoundException {
         when(roleService.getRoles()).thenThrow(RolesNotFoundException.class);
 
         Assertions.assertThrows(RolesNotFoundException.class, () -> {
@@ -97,7 +97,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testGetRole() throws RoleNotFoundException {
+    void testGetRole() throws RoleNotFoundException {
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
 
         when(roleService.getRole("Admin")).thenReturn(roleResponse);
@@ -111,7 +111,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testGetRoleNotFound() throws RoleNotFoundException {
+    void testGetRoleNotFound() throws RoleNotFoundException {
         when(roleService.getRole("Super Admin")).thenThrow(RoleNotFoundException.class);
 
         Assertions.assertThrows(RoleNotFoundException.class, () -> {
@@ -122,7 +122,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testDeleteRole() throws RoleNotFoundException, RoleAlreadyAssignedException {
+    void testDeleteRole() throws RoleNotFoundException, RoleAlreadyAssignedException {
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
 
         when(roleService.deleteRole("Admin")).thenReturn(roleResponse);
@@ -136,7 +136,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testDeleteRoleExceptionNotFound() throws RoleNotFoundException, RoleAlreadyAssignedException {
+    void testDeleteRoleExceptionNotFound() throws RoleNotFoundException, RoleAlreadyAssignedException {
         when(roleService.deleteRole("Super Admin")).thenThrow(RoleNotFoundException.class);
 
         Assertions.assertThrows(RoleNotFoundException.class, () -> {
@@ -147,7 +147,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testDeleteRoleExceptionAlreadyAssigned() throws RoleNotFoundException, RoleAlreadyAssignedException {
+    void testDeleteRoleExceptionAlreadyAssigned() throws RoleNotFoundException, RoleAlreadyAssignedException {
         when(roleService.deleteRole("Admin")).thenThrow(RoleAlreadyAssignedException.class);
 
         Assertions.assertThrows(RoleAlreadyAssignedException.class, () -> {
@@ -158,7 +158,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testUpdateRoleDescription() throws RoleNotFoundException {
+    void testUpdateRoleDescription() throws RoleNotFoundException {
         RoleDescriptionDTO roleDescriptionDTO = new RoleDescriptionDTO("New Description");
         RoleResponse roleResponse = new RoleResponse("Admin", "New Description");
 
@@ -173,7 +173,7 @@ class RoleControllerTest {
     }
 
     @Test
-    public void testUpdateRoleDescriptionExceptionNotFound() throws RoleNotFoundException {
+    void testUpdateRoleDescriptionExceptionNotFound() throws RoleNotFoundException {
         RoleDescriptionDTO roleDescriptionDTO = new RoleDescriptionDTO("New Description");
         when(roleService.updateRoleDescription(roleDescriptionDTO, "Super Admin")).thenThrow(RoleNotFoundException.class);
 
