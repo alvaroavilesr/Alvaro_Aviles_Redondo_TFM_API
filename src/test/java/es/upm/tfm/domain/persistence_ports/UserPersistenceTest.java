@@ -2,6 +2,7 @@ package es.upm.tfm.domain.persistence_ports;
 
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
 import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
+import es.upm.tfm.adapters.mysqldb.dto.UpdateUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
@@ -185,6 +186,41 @@ class UserPersistenceTest {
 
         Assertions.assertThrows(UserNameNotValid.class, () -> {
             userPersistence.deleteUser("User1");
+        });
+    }
+
+    @Test
+    public void testUpdateUser() throws UserNotFoundException, UserNameNotValid {
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.updateUser(updateUserDTO, "User1")).thenReturn(userResponse);
+
+        UserResponse response = userPersistence.updateUser(updateUserDTO, "User1");
+
+        assertEquals(userResponse, response);
+    }
+
+    @Test
+    public void testUpdateUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
+
+        when(userService.updateUser(updateUserDTO, "User1")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            userPersistence.updateUser(updateUserDTO, "User1");
+        });
+    }
+
+    @Test
+    public void testUpdateUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
+
+        when(userService.updateUser(updateUserDTO, "User1")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            userPersistence.updateUser(updateUserDTO, "User1");
         });
     }
 }

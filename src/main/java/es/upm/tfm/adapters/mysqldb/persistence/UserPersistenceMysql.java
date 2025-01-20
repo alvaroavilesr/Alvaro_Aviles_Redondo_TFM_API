@@ -1,6 +1,7 @@
 package es.upm.tfm.adapters.mysqldb.persistence;
 
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
+import es.upm.tfm.adapters.mysqldb.dto.UpdateUserDTO;
 import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
 import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
@@ -99,5 +100,25 @@ public class UserPersistenceMysql implements UserPersistence {
         }
         userRepository.deleteById(userName);
         return modelMapper.map(user, UserResponse.class);
+    }
+
+    public UserResponse updateUser(UpdateUserDTO updateUserDTO, String userName) throws UserNotFoundException, UserNameNotValid {
+        UserEntity user = userRepository.findById(userName).orElseThrow(() -> new UserNotFoundException(userName));
+        if(user.getRole().isEmpty()){
+            throw new UserNameNotValid(userName);
+        }
+        if(updateUserDTO.getUserFirstName() != null){
+            user.setUserFirstName(updateUserDTO.getUserFirstName());
+        }
+        if(updateUserDTO.getUserLastName() != null){
+            user.setUserLastName(updateUserDTO.getUserLastName());
+        }
+        if(updateUserDTO.getEmail() != null){
+            user.setEmail(updateUserDTO.getEmail());
+        }
+        if(updateUserDTO.getUserPassword() != null){
+            user.setUserPassword(getEncodedPassword(updateUserDTO.getUserPassword()));
+        }
+        return modelMapper.map(userRepository.save(user), UserResponse.class);
     }
 }

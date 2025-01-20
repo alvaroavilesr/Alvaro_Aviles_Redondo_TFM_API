@@ -1,6 +1,7 @@
 package es.upm.tfm.domain.persistence_ports;
 
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
+import es.upm.tfm.adapters.mysqldb.dto.UpdateUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
@@ -23,4 +24,6 @@ public interface UserPersistence {
     UserResponse getUser(String userName) throws UserNotFoundException, UserNameNotValid;
 
     UserResponse deleteUser(String userName) throws UserNotFoundException, UserNameNotValid;
+
+    UserResponse updateUser(UpdateUserDTO updateUserDTO, String userName) throws UserNotFoundException, UserNameNotValid;
 }

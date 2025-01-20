@@ -1,6 +1,7 @@
 package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
+import es.upm.tfm.adapters.mysqldb.dto.UpdateUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
@@ -43,5 +44,9 @@ public class UserService {
 
     public UserResponse deleteUser(String userName) throws UserNotFoundException, UserNameNotValid {
         return this.userPersistence.deleteUser(userName);
+    }
+
+    public UserResponse updateUser(UpdateUserDTO updateUserDTO, String userName) throws UserNotFoundException, UserNameNotValid {
+        return this.userPersistence.updateUser(updateUserDTO, userName);
     }
 }

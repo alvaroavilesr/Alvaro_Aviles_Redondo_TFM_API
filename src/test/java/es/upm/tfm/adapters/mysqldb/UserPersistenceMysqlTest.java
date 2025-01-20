@@ -1,23 +1,19 @@
 package es.upm.tfm.adapters.mysqldb;
 
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
-import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
+import es.upm.tfm.adapters.mysqldb.dto.UpdateUserDTO;
 import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
 import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
-import es.upm.tfm.adapters.mysqldb.persistence.RolePersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.persistence.UserPersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
 import es.upm.tfm.adapters.mysqldb.respository.RoleRepository;
 import es.upm.tfm.adapters.mysqldb.respository.UserRepository;
-import es.upm.tfm.domain.models.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,9 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -242,6 +236,46 @@ class UserPersistenceMysqlTest {
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
 
         UserResponse response = userPersistenceMysql.deleteUser("User1");
+
+        Assertions.assertEquals(response, userResponse);
+    }
+
+    @Test
+    public void UpdateUserUserNotFound(){
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> {
+            userPersistenceMysql.updateUser(updateUserDTO,  "User1");
+        });
+    }
+
+    @Test
+    public void UpdateUserUserNameNotValid(){
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
+
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Collections.emptySet(), null);
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+
+        assertThrows(UserNameNotValid.class, () -> {
+            userPersistenceMysql.updateUser(updateUserDTO, "User1");
+        });
+    }
+
+    @Test
+    public void UpdateUser() throws UserNotFoundException, UserNameNotValid {
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail@gmail.com", "NewPass");
+        RoleEntity role = new RoleEntity("User", "Role for users");
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
+        RoleResponse roleResponse = new RoleResponse("User", "Role for users");
+        UserResponse userResponse = new UserResponse("User1", "NewName", "NewSurname", "NewEmail@gmail.com",Set.of(roleResponse));
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+
+        UserResponse response = userPersistenceMysql.updateUser(updateUserDTO, "User1");
 
         Assertions.assertEquals(response, userResponse);
     }

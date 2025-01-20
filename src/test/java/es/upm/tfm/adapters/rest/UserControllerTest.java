@@ -1,6 +1,7 @@
 package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
+import es.upm.tfm.adapters.mysqldb.dto.UpdateUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
@@ -212,5 +213,46 @@ class UserControllerTest {
         });
 
         verify(userService, times(1)).deleteUser("User1");
+    }
+
+    @Test
+    public void testUpdateUser() throws UserNotFoundException, UserNameNotValid {
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.updateUser(updateUserDTO, "User1")).thenReturn(userResponse);
+
+        ResponseEntity<UserResponse> response = userController.updateUser(updateUserDTO, "User1");
+
+        assertEquals(userResponse, response.getBody());
+
+        verify(userService, times(1)).updateUser(updateUserDTO, "User1");
+    }
+
+    @Test
+    public void testUpdateUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
+
+        when(userService.updateUser(updateUserDTO, "User1")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            userController.updateUser(updateUserDTO, "User1");
+        });
+
+        verify(userService, times(1)).updateUser(updateUserDTO, "User1");
+    }
+
+    @Test
+    public void testUpdateUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
+
+        when(userService.updateUser(updateUserDTO, "User1")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            userController.updateUser(updateUserDTO, "User1");
+        });
+
+        verify(userService, times(1)).updateUser(updateUserDTO, "User1");
     }
 }
