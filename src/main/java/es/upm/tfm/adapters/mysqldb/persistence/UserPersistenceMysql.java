@@ -50,4 +50,21 @@ public class UserPersistenceMysql implements UserPersistence {
 
         return modelMapper.map(userRepository.save(user),UserResponse.class);
     }
+
+    public UserResponse createUser(NewUserDTO newUserDTO, String selectedRole) throws RoleNotFoundException, UserAlreadyExistingException {
+        if(userRepository.findById(newUserDTO.getUserName()).isPresent()){
+            throw new UserAlreadyExistingException(newUserDTO.getUserName());
+        }
+        RoleEntity role = roleRepository.findById(selectedRole).orElseThrow(() -> new RoleNotFoundException(selectedRole));
+        Set<RoleEntity> userRoles = new HashSet<>();
+        userRoles.add(role);
+
+        UserEntity user = modelMapper.map(newUserDTO,UserEntity.class);
+
+        user.setRole(userRoles);
+        user.setUserPassword(getEncodedPassword(newUserDTO.getUserPassword()));
+
+        return modelMapper.map(userRepository.save(user),UserResponse.class);
+    }
+
 }

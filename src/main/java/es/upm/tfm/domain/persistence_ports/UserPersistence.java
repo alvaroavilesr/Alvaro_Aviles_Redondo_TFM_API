@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface UserPersistence {
 
     UserResponse registerNewUser (NewUserDTO newUserDTO) throws UserAlreadyExistingException, RoleNotFoundException;
+
+    UserResponse createUser (NewUserDTO newUserDTO, String role) throws UserAlreadyExistingException, RoleNotFoundException;
+
 }

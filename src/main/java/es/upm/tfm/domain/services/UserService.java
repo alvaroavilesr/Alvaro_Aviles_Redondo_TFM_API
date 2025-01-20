@@ -23,4 +23,8 @@ public class UserService {
     public UserResponse registerNewUser (NewUserDTO newUserDTO) throws UserAlreadyExistingException, RoleNotFoundException {
         return this.userPersistence.registerNewUser(newUserDTO);
     }
+
+    public UserResponse createUser (NewUserDTO newUserDTO, String role) throws UserAlreadyExistingException, RoleNotFoundException {
+        return this.userPersistence.createUser(newUserDTO, role);
+    }
 }
