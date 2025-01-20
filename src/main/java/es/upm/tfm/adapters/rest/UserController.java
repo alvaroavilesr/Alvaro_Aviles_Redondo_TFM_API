@@ -3,6 +3,8 @@ package es.upm.tfm.adapters.rest;
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
 import es.upm.tfm.domain.services.UserService;
@@ -66,4 +68,16 @@ public class UserController {
         return new ResponseEntity<>(userService.getUsers(),HttpStatus.OK);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User successfully retrieved"),
+            @ApiResponse(responseCode = "404", description = "User not found in the database"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "GET HTTP method endpoint for getting an user - [ADMIN]")
+    @GetMapping("/api/user/{userName}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<UserResponse> getUser(@PathVariable("userName") String userName) throws UserNotFoundException, UserNameNotValid {
+        return new ResponseEntity<>(userService.getUser(userName),HttpStatus.OK);
+    }
 }

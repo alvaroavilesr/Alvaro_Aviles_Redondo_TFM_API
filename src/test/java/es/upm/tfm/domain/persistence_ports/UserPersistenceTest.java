@@ -6,6 +6,8 @@ import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
@@ -16,12 +18,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserPersistenceTest {
@@ -122,6 +125,36 @@ class UserPersistenceTest {
 
         Assertions.assertThrows(UsersNotFoundException.class, () -> {
             userPersistence.getUsers();
+        });
+    }
+
+    @Test
+    public void testGetUser() throws UserNotFoundException, UserNameNotValid {
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.getUser("User1")).thenReturn(userResponse);
+
+        UserResponse response = userPersistence.getUser("User1");
+
+        assertEquals(userResponse, response);
+    }
+
+    @Test
+    public void testGetUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+        when(userService.getUser("User1")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            userPersistence.getUser("User1");
+        });
+    }
+
+    @Test
+    public void testGetUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+        when(userService.getUser("User1")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            userPersistence.getUser("User1");
         });
     }
 

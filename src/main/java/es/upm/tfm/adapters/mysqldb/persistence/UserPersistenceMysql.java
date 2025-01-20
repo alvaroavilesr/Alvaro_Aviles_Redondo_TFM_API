@@ -5,6 +5,8 @@ import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
 import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
 import es.upm.tfm.adapters.mysqldb.respository.RoleRepository;
@@ -82,5 +84,11 @@ public class UserPersistenceMysql implements UserPersistence {
         }
     }
 
-
+    public UserResponse getUser(String userName) throws UserNotFoundException, UserNameNotValid {
+        UserEntity user = userRepository.findById(userName).orElseThrow(() -> new UserNotFoundException(userName));
+        if(user.getRole().isEmpty()){
+            throw new UserNameNotValid(userName);
+        }
+        return modelMapper.map(user, UserResponse.class);
+    }
 }

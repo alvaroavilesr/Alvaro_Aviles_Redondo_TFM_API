@@ -3,6 +3,8 @@ package es.upm.tfm.domain.services;
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,4 +37,7 @@ public class UserService {
         return this.userPersistence.getUsers();
     }
 
+    public UserResponse getUser(String userName) throws UserNotFoundException, UserNameNotValid {
+        return this.userPersistence.getUser(userName);
+    }
 }

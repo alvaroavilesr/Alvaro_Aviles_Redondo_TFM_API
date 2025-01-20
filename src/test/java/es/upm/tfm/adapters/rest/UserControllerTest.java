@@ -3,6 +3,8 @@ package es.upm.tfm.adapters.rest;
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
@@ -140,4 +142,39 @@ class UserControllerTest {
         verify(userService, times(1)).getUsers();
     }
 
+    @Test
+    public void testGetUser() throws UserNotFoundException, UserNameNotValid {
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.getUser("User1")).thenReturn(userResponse);
+
+        ResponseEntity<UserResponse> response = userController.getUser("User1");
+
+        assertEquals(userResponse, response.getBody());
+
+        verify(userService, times(1)).getUser("User1");
+    }
+
+    @Test
+    public void testGetUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+        when(userService.getUser("User1")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            userController.getUser("User1");
+        });
+
+        verify(userService, times(1)).getUser("User1");
+    }
+
+    @Test
+    public void testGetUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+        when(userService.getUser("User1")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            userController.getUser("User1");
+        });
+
+        verify(userService, times(1)).getUser("User1");
+    }
 }

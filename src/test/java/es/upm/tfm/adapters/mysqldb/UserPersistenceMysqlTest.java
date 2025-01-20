@@ -8,6 +8,8 @@ import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.persistence.RolePersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.persistence.UserPersistenceMysql;
@@ -28,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -175,4 +178,37 @@ class UserPersistenceMysqlTest {
         Assertions.assertEquals(responses.get(0).getUserLastName(), "Aviles");
     }
 
+    @Test
+    public void GetUserUsersNotFound(){
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> {
+            userPersistenceMysql.getUser("User1");
+        });
+    }
+
+    @Test
+    public void GetUserUserNameNotValid(){
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Collections.emptySet(), null);
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+
+        assertThrows(UserNameNotValid.class, () -> {
+            userPersistenceMysql.getUser("User1");
+        });
+    }
+
+    @Test
+    public void GetUser() throws UserNotFoundException, UserNameNotValid {
+        RoleEntity role = new RoleEntity("User", "Role for users");
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
+        RoleResponse roleResponse = new RoleResponse("User", "Role for users");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+
+        UserResponse response = userPersistenceMysql.getUser("User1");
+
+        assertEquals(response, userResponse);
+    }
 }
