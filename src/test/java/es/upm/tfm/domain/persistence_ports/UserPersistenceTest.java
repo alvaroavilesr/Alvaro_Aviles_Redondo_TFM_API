@@ -1,11 +1,8 @@
 package es.upm.tfm.domain.persistence_ports;
 
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
-import es.upm.tfm.adapters.mysqldb.dto.RoleDTO;
 import es.upm.tfm.adapters.mysqldb.dto.UpdateUserDTO;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
-import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
@@ -19,13 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserPersistenceTest {
@@ -37,7 +33,7 @@ class UserPersistenceTest {
     private UserService userService;
 
     @Test
-    public void testRegisterNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testRegisterNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         Set<RoleResponse> roleResponses = Set.of(roleResponse);
@@ -51,7 +47,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testRegisterNewUserExceptionNotValid() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testRegisterNewUserExceptionNotValid() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         when(userService.registerNewUser(newUserDTO)).thenThrow(RoleNotFoundException.class);
@@ -62,7 +58,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testRegisterNewUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testRegisterNewUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         when(userService.registerNewUser(newUserDTO)).thenThrow(UserAlreadyExistingException.class);
@@ -73,7 +69,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testCreateNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testCreateNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("Admin1",  "Admin", "1", "admin@example.com", "123");
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
         Set<RoleResponse> roleResponses = Set.of(roleResponse);
@@ -87,7 +83,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testCreateNewUserExceptionNotValid() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testCreateNewUserExceptionNotValid() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         when(userService.createUser(newUserDTO, "User")).thenThrow(RoleNotFoundException.class);
@@ -98,7 +94,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testCreateNewUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testCreateNewUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         when(userService.createUser(newUserDTO, "User")).thenThrow(UserAlreadyExistingException.class);
@@ -109,7 +105,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testGetUsers() throws UsersNotFoundException {
+    void testGetUsers() throws UsersNotFoundException {
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
@@ -121,7 +117,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testGetUsersExceptionUsersNotFound() throws UsersNotFoundException {
+    void testGetUsersExceptionUsersNotFound() throws UsersNotFoundException {
         when(userService.getUsers()).thenThrow(UsersNotFoundException.class);
 
         Assertions.assertThrows(UsersNotFoundException.class, () -> {
@@ -130,7 +126,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testGetUser() throws UserNotFoundException, UserNameNotValid {
+    void testGetUser() throws UserNotFoundException, UserNameNotValid {
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
@@ -142,7 +138,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testGetUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+    void testGetUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
         when(userService.getUser("User1")).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> {
@@ -151,7 +147,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testGetUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+    void testGetUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
         when(userService.getUser("User1")).thenThrow(UserNameNotValid.class);
 
         Assertions.assertThrows(UserNameNotValid.class, () -> {
@@ -160,7 +156,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testDeleteUser() throws UserNotFoundException, UserNameNotValid {
+    void testDeleteUser() throws UserNotFoundException, UserNameNotValid {
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
@@ -172,7 +168,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testDeleteUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+    void testDeleteUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
         when(userService.deleteUser("User1")).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> {
@@ -181,7 +177,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testDeleteUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+    void testDeleteUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
         when(userService.deleteUser("User1")).thenThrow(UserNameNotValid.class);
 
         Assertions.assertThrows(UserNameNotValid.class, () -> {
@@ -190,7 +186,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testUpdateUser() throws UserNotFoundException, UserNameNotValid {
+    void testUpdateUser() throws UserNotFoundException, UserNameNotValid {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
@@ -203,7 +199,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testUpdateUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+    void testUpdateUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
 
         when(userService.updateUser(updateUserDTO, "User1")).thenThrow(UserNotFoundException.class);
@@ -214,7 +210,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testUpdateUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+    void testUpdateUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
 
         when(userService.updateUser(updateUserDTO, "User1")).thenThrow(UserNameNotValid.class);
@@ -225,7 +221,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testUpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void testUpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
@@ -237,7 +233,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testUpdateUserRoleExceptionUserNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void testUpdateUserRoleExceptionUserNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         when(userService.updateUserRole("User1", "User")).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> {
@@ -246,7 +242,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testUpdateUserRoleExceptionRoleNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void testUpdateUserRoleExceptionRoleNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         when(userService.updateUserRole("User1", "User")).thenThrow(RoleNotFoundException.class);
 
         Assertions.assertThrows(RoleNotFoundException.class, () -> {
@@ -255,7 +251,7 @@ class UserPersistenceTest {
     }
 
     @Test
-    public void testUpdateUserRoleExceptionUsernameNotValid() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void testUpdateUserRoleExceptionUsernameNotValid() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         when(userService.updateUserRole("User1", "User")).thenThrow(UserNameNotValid.class);
 
         Assertions.assertThrows(UserNameNotValid.class, () -> {

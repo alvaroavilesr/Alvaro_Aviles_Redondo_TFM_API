@@ -49,7 +49,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void CreateRoleRoleAlreadyExisting() {
+    void CreateRoleRoleAlreadyExisting() {
         RoleDTO roleDTO = new RoleDTO("Admin", "Admin role");
         RoleEntity role = new RoleEntity("Admin", "Admin role");
 
@@ -63,7 +63,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void CreateRole() throws RoleAlreadyExistingException, RoleNotValidException {
+    void CreateRole() throws RoleAlreadyExistingException, RoleNotValidException {
         RoleDTO roleDTO = new RoleDTO("Admin", "Admin role");
         RoleEntity role = new RoleEntity("Admin", "Admin role");
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
@@ -80,7 +80,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void GetRolesNoRolesFound() {
+    void GetRolesNoRolesFound() {
         Mockito.when(roleRepository.findAll()).thenReturn(Collections.emptyList());
 
         assertThrows(RolesNotFoundException.class, () -> {
@@ -91,7 +91,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void GetRoles() throws RolesNotFoundException {
+    void GetRoles() throws RolesNotFoundException {
         RoleEntity role = new RoleEntity("Admin", "Admin role");
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
 
@@ -105,7 +105,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void GetRoleNotFound() {
+    void GetRoleNotFound() {
         Mockito.when(roleRepository.findById("Admin")).thenReturn(Optional.empty());
 
         assertThrows(RoleNotFoundException.class, () -> {
@@ -116,7 +116,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void GetRole() throws RoleNotFoundException {
+    void GetRole() throws RoleNotFoundException {
         RoleEntity role = new RoleEntity("Admin", "Admin role");
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
 
@@ -130,7 +130,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void DeleteRoleRoleAlreadyAssigned(){
+    void DeleteRoleRoleAlreadyAssigned(){
         Set<RoleEntity> roles = new HashSet<>();
         RoleEntity role = new RoleEntity("Admin", "Role for admins");
         roles.add(role);
@@ -145,7 +145,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void DeleteRoleRoleNotFound(){
+    void DeleteRoleRoleNotFound(){
 
         Mockito.when(userRepository.findAll()).thenReturn(Collections.emptyList());
         Mockito.when(roleRepository.findById("Admin")).thenReturn(Optional.empty());
@@ -156,7 +156,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void DeleteRole() throws RoleNotFoundException, RoleAlreadyAssignedException {
+    void DeleteRole() throws RoleNotFoundException, RoleAlreadyAssignedException {
         RoleEntity role = new RoleEntity("Admin", "Admin role");
         RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
 
@@ -170,7 +170,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateRoleDescriptionRoleNotFound(){
+    void UpdateRoleDescriptionRoleNotFound(){
         Mockito.when(roleRepository.findById("Admin")).thenReturn(Optional.empty());
 
         RoleDescriptionDTO roleDescriptionDTO = new RoleDescriptionDTO("new desc");
@@ -183,7 +183,7 @@ class RolePersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateRoleDescription() throws RoleNotFoundException {
+    void UpdateRoleDescription() throws RoleNotFoundException {
         RoleEntity role = new RoleEntity("Admin", "Admin role");
         RoleResponse roleResponse = new RoleResponse("Admin", "New Description");
 

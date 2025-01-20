@@ -34,7 +34,7 @@ class UserControllerTest {
     private UserController userController;
 
     @Test
-    public void testRegisterNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testRegisterNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         Set<RoleResponse> roleResponses = Set.of(roleResponse);
@@ -50,7 +50,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testRegisterNewUserExceptionNotFound() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testRegisterNewUserExceptionNotFound() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         when(userService.registerNewUser(newUserDTO)).thenThrow(RoleNotFoundException.class);
@@ -63,7 +63,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testRegisterNewUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testRegisterNewUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         when(userService.registerNewUser(newUserDTO)).thenThrow(UserAlreadyExistingException.class);
@@ -76,7 +76,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testCreateUser() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testCreateUser() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         Set<RoleResponse> roleResponses = Set.of(roleResponse);
@@ -92,7 +92,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testCreateUserExceptionNotFound() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testCreateUserExceptionNotFound() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         when(userService.createUser(newUserDTO, "Super admin")).thenThrow(RoleNotFoundException.class);
@@ -105,7 +105,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testCreateUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
+    void testCreateUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         when(userService.createUser(newUserDTO, "User")).thenThrow(UserAlreadyExistingException.class);
@@ -119,7 +119,7 @@ class UserControllerTest {
 
 
     @Test
-    public void testGetUsers() throws UsersNotFoundException {
+    void testGetUsers() throws UsersNotFoundException {
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
@@ -133,7 +133,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testGetUsersExceptionUsersNotFound() throws UsersNotFoundException {
+    void testGetUsersExceptionUsersNotFound() throws UsersNotFoundException {
         when(userService.getUsers()).thenThrow(UsersNotFoundException.class);
 
         Assertions.assertThrows(UsersNotFoundException.class, () -> {
@@ -144,7 +144,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testGetUser() throws UserNotFoundException, UserNameNotValid {
+    void testGetUser() throws UserNotFoundException, UserNameNotValid {
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
@@ -158,7 +158,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testGetUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+    void testGetUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
         when(userService.getUser("User1")).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> {
@@ -169,7 +169,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testGetUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+    void testGetUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
         when(userService.getUser("User1")).thenThrow(UserNameNotValid.class);
 
         Assertions.assertThrows(UserNameNotValid.class, () -> {
@@ -180,7 +180,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testDeleteUser() throws UserNotFoundException, UserNameNotValid {
+    void testDeleteUser() throws UserNotFoundException, UserNameNotValid {
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
@@ -194,7 +194,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testDeleteUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+    void testDeleteUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
         when(userService.deleteUser("User1")).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> {
@@ -205,7 +205,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testDeleteUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+    void testDeleteUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
         when(userService.deleteUser("User1")).thenThrow(UserNameNotValid.class);
 
         Assertions.assertThrows(UserNameNotValid.class, () -> {
@@ -216,7 +216,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUser() throws UserNotFoundException, UserNameNotValid {
+    void testUpdateUser() throws UserNotFoundException, UserNameNotValid {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
@@ -231,7 +231,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+    void testUpdateUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
 
         when(userService.updateUser(updateUserDTO, "User1")).thenThrow(UserNotFoundException.class);
@@ -244,7 +244,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+    void testUpdateUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
 
         when(userService.updateUser(updateUserDTO, "User1")).thenThrow(UserNameNotValid.class);
@@ -257,7 +257,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void testUpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
@@ -271,7 +271,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUserRoleExceptionUserNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void testUpdateUserRoleExceptionUserNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         when(userService.updateUserRole("User1", "User")).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> {
@@ -282,7 +282,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUserRoleExceptionRoleNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void testUpdateUserRoleExceptionRoleNotFound() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         when(userService.updateUserRole("User1", "User")).thenThrow(RoleNotFoundException.class);
 
         Assertions.assertThrows(RoleNotFoundException.class, () -> {
@@ -293,7 +293,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUserRoleExceptionUsernameNotValid() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void testUpdateUserRoleExceptionUsernameNotValid() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         when(userService.updateUserRole("User1", "User")).thenThrow(UserNameNotValid.class);
 
         Assertions.assertThrows(UserNameNotValid.class, () -> {

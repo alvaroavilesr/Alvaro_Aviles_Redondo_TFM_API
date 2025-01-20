@@ -48,7 +48,7 @@ class UserPersistenceMysqlTest {
     private UserPersistenceMysql userPersistenceMysql;
 
     @Test
-    public void RegisterNewUserAlreadyExisting(){
+    void RegisterNewUserAlreadyExisting(){
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
         UserEntity user = new UserEntity("User1",  "User", "1");
 
@@ -60,7 +60,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void RegisterNewUserRoleNotFound(){
+    void RegisterNewUserRoleNotFound(){
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         Mockito.when(userRepository.findById(newUserDTO.getUserName())).thenReturn(Optional.empty());
@@ -72,7 +72,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void RegisterNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
+    void RegisterNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
         RoleEntity role = new RoleEntity("User", "User role");
 
@@ -98,7 +98,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void CreateNewUserAlreadyExisting(){
+    void CreateNewUserAlreadyExisting(){
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
         UserEntity user = new UserEntity("User1",  "User", "1");
 
@@ -110,7 +110,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void CreateNewUserRoleNotFound(){
+    void CreateNewUserRoleNotFound(){
         NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
 
         Mockito.when(userRepository.findById(newUserDTO.getUserName())).thenReturn(Optional.empty());
@@ -122,7 +122,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void CreateNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
+    void CreateNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
         NewUserDTO newUserDTO = new NewUserDTO("Admin1",  "Admin", "1", "admin@example.com", "123");
         RoleEntity role = new RoleEntity("Admin", "Admin role");
 
@@ -148,7 +148,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void GetUsersUsersNotFound(){
+    void GetUsersUsersNotFound(){
         Mockito.when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
         assertThrows(UsersNotFoundException.class, () -> {
@@ -157,11 +157,9 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void GetUsers() throws UsersNotFoundException {
+    void GetUsers() throws UsersNotFoundException {
         RoleEntity role = new RoleEntity("User", "User role");
-        RoleResponse roleResponse = new RoleResponse("User", "User role");
         UserEntity user = new UserEntity("User1",  "Alvaro", "Aviles" ,Set.of(role));
-        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
 
         Mockito.when(userRepository.findAll()).thenReturn(List.of(user));
 
@@ -173,7 +171,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void GetUserUserNotFound(){
+    void GetUserUserNotFound(){
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> {
@@ -182,7 +180,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void GetUserUserNameNotValid(){
+    void GetUserUserNameNotValid(){
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Collections.emptySet(), null);
 
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
@@ -193,7 +191,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void GetUser() throws UserNotFoundException, UserNameNotValid {
+    void GetUser() throws UserNotFoundException, UserNameNotValid {
         RoleEntity role = new RoleEntity("User", "Role for users");
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
         RoleResponse roleResponse = new RoleResponse("User", "Role for users");
@@ -207,7 +205,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void DeleteUserUserNotFound(){
+    void DeleteUserUserNotFound(){
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> {
@@ -216,7 +214,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void DeleteUserUserNameNotValid(){
+    void DeleteUserUserNameNotValid(){
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Collections.emptySet(), null);
 
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
@@ -227,7 +225,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void DeleteUser() throws UserNotFoundException, UserNameNotValid {
+    void DeleteUser() throws UserNotFoundException, UserNameNotValid {
         RoleEntity role = new RoleEntity("User", "Role for users");
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
         RoleResponse roleResponse = new RoleResponse("User", "Role for users");
@@ -241,7 +239,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateUserUserNotFound(){
+    void UpdateUserUserNotFound(){
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
 
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
@@ -252,7 +250,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateUserUserNameNotValid(){
+    void UpdateUserUserNameNotValid(){
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail", "NewPass");
 
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Collections.emptySet(), null);
@@ -265,7 +263,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateUser() throws UserNotFoundException, UserNameNotValid {
+    void UpdateUser() throws UserNotFoundException, UserNameNotValid {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO("NewName", "NewSurname", "NewEmail@gmail.com", "NewPass");
         RoleEntity role = new RoleEntity("User", "Role for users");
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
@@ -281,7 +279,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateUserRoleUserNotFound(){
+    void UpdateUserRoleUserNotFound(){
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> {
@@ -290,7 +288,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateUserRoleUserNameNotValid(){
+    void UpdateUserRoleUserNameNotValid(){
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Collections.emptySet(), null);
 
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
@@ -301,7 +299,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateUserRoleRoleNotFoundException(){
+    void UpdateUserRoleRoleNotFoundException(){
         RoleEntity role = new RoleEntity("User", "Role for users");
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
 
@@ -314,7 +312,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void UpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+    void UpdateUserRole() throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
         RoleEntity role = new RoleEntity("User", "Role for users");
         UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
         RoleResponse roleResponse = new RoleResponse("User", "Role for users");
