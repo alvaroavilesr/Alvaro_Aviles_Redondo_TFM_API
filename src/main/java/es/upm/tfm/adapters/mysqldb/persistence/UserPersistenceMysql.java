@@ -91,4 +91,13 @@ public class UserPersistenceMysql implements UserPersistence {
         }
         return modelMapper.map(user, UserResponse.class);
     }
+
+    public UserResponse deleteUser(String userName) throws UserNotFoundException, UserNameNotValid {
+        UserEntity user = userRepository.findById(userName).orElseThrow(() -> new UserNotFoundException(userName));
+        if(user.getRole().isEmpty()){
+            throw new UserNameNotValid(userName);
+        }
+        userRepository.deleteById(userName);
+        return modelMapper.map(user, UserResponse.class);
+    }
 }

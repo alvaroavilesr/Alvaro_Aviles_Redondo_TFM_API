@@ -153,4 +153,34 @@ class UserServiceTest {
             userPersistence.getUser("User1");
         });
     }
+
+    @Test
+    public void testDeleteUser() throws UserNotFoundException, UserNameNotValid {
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.deleteUser("User1")).thenReturn(userResponse);
+
+        UserResponse response = userPersistence.deleteUser("User1");
+
+        assertEquals(userResponse, response);
+    }
+
+    @Test
+    public void testDeleteUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+        when(userService.deleteUser("User1")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            userPersistence.deleteUser("User1");
+        });
+    }
+
+    @Test
+    public void testDeleteUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+        when(userService.deleteUser("User1")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            userPersistence.deleteUser("User1");
+        });
+    }
 }

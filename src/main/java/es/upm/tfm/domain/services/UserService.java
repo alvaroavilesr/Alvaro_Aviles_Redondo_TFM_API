@@ -40,4 +40,8 @@ public class UserService {
     public UserResponse getUser(String userName) throws UserNotFoundException, UserNameNotValid {
         return this.userPersistence.getUser(userName);
     }
+
+    public UserResponse deleteUser(String userName) throws UserNotFoundException, UserNameNotValid {
+        return this.userPersistence.deleteUser(userName);
+    }
 }

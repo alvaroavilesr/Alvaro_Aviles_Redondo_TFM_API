@@ -80,4 +80,17 @@ public class UserController {
     public ResponseEntity<UserResponse> getUser(@PathVariable("userName") String userName) throws UserNotFoundException, UserNameNotValid {
         return new ResponseEntity<>(userService.getUser(userName),HttpStatus.OK);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User successfully deleted"),
+            @ApiResponse(responseCode = "400", description = "No user found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "DELETE HTTP method endpoint for deleting an user by its username - [ADMIN]")
+    @DeleteMapping("/api/user/{userName}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<UserResponse> deleteUser(@PathVariable("userName") String userName) throws UserNotFoundException, UserNameNotValid {
+        return new ResponseEntity<>(userService.deleteUser(userName),HttpStatus.OK);
+    }
 }
