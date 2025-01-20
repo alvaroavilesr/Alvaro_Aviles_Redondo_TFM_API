@@ -1,6 +1,7 @@
 package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
+import es.upm.tfm.adapters.mysqldb.dto.UpdateUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
@@ -92,5 +93,18 @@ public class UserController {
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable("userName") String userName) throws UserNotFoundException, UserNameNotValid {
         return new ResponseEntity<>(userService.deleteUser(userName),HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User data successfully updated"),
+            @ApiResponse(responseCode = "400", description = "Mandatory fields not supplied"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "PUT HTTP method endpoint for updating the data of an user - [ADMIN][VENDOR][USER]")
+    @PutMapping("/api/user/{userName}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserDTO updateUserDTO, @PathVariable("userName") String userName) throws UserNotFoundException, UserNameNotValid {
+        return new ResponseEntity<>(userService.updateUser(updateUserDTO, userName),HttpStatus.OK);
     }
 }
