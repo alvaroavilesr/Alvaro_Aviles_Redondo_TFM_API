@@ -54,7 +54,7 @@ public class RolePersistenceMysql implements RolePersistence {
         }else{
             return roles.stream()
                     .map(rol -> modelMapper.map(rol, RoleResponse.class))
-                    .collect(Collectors.toList());
+                    .toList();
         }
     }
 

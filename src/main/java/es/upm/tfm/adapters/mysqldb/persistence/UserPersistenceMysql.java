@@ -81,7 +81,7 @@ public class UserPersistenceMysql implements UserPersistence {
         }else{
             return users.stream()
                     .map(user -> modelMapper.map(user, UserResponse.class))
-                    .collect(Collectors.toList());
+                    .toList();
         }
     }
 
