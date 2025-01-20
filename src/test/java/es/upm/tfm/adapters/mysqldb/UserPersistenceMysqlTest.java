@@ -165,9 +165,9 @@ class UserPersistenceMysqlTest {
 
         List<UserResponse> responses = userPersistenceMysql.getUsers();
 
-        Assertions.assertEquals(responses.get(0).getUserName(), "User1");
-        Assertions.assertEquals(responses.get(0).getUserFirstName(), "Alvaro");
-        Assertions.assertEquals(responses.get(0).getUserLastName(), "Aviles");
+        Assertions.assertEquals("User1" , responses.get(0).getUserName());
+        Assertions.assertEquals("Alvaro" , responses.get(0).getUserFirstName());
+        Assertions.assertEquals("Aviles" , responses.get(0).getUserLastName());
     }
 
     @Test
