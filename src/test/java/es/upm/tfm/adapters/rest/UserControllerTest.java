@@ -3,6 +3,7 @@ package es.upm.tfm.adapters.rest;
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
 import es.upm.tfm.domain.services.UserService;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -111,4 +113,31 @@ class UserControllerTest {
 
         verify(userService, times(1)).createUser(newUserDTO, "User");
     }
+
+
+    @Test
+    public void testGetUsers() throws UsersNotFoundException {
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.getUsers()).thenReturn(List.of(userResponse));
+
+        ResponseEntity<List<UserResponse>> response = userController.getUsers();
+
+        assertEquals(List.of(userResponse), response.getBody());
+
+        verify(userService, times(1)).getUsers();
+    }
+
+    @Test
+    public void testGetUsersExceptionUsersNotFound() throws UsersNotFoundException {
+        when(userService.getUsers()).thenThrow(UsersNotFoundException.class);
+
+        Assertions.assertThrows(UsersNotFoundException.class, () -> {
+            userController.getUsers();
+        });
+
+        verify(userService, times(1)).getUsers();
+    }
+
 }
