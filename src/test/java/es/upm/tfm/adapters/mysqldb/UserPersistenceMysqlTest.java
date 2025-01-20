@@ -179,7 +179,7 @@ class UserPersistenceMysqlTest {
     }
 
     @Test
-    public void GetUserUsersNotFound(){
+    public void GetUserUserNotFound(){
         Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> {
@@ -209,6 +209,40 @@ class UserPersistenceMysqlTest {
 
         UserResponse response = userPersistenceMysql.getUser("User1");
 
-        assertEquals(response, userResponse);
+        Assertions.assertEquals(response, userResponse);
+    }
+
+    @Test
+    public void DeleteUserUserNotFound(){
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> {
+            userPersistenceMysql.deleteUser("User1");
+        });
+    }
+
+    @Test
+    public void DeleteUserUserNameNotValid(){
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Collections.emptySet(), null);
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+
+        assertThrows(UserNameNotValid.class, () -> {
+            userPersistenceMysql.deleteUser("User1");
+        });
+    }
+
+    @Test
+    public void DeleteUser() throws UserNotFoundException, UserNameNotValid {
+        RoleEntity role = new RoleEntity("User", "Role for users");
+        UserEntity user = new UserEntity("User1", "Alvaro", "Aviles", "alvaro@gmail.com", "pass", Set.of(role), null);
+        RoleResponse roleResponse = new RoleResponse("User", "Role for users");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        Mockito.when(userRepository.findById("User1")).thenReturn(Optional.of(user));
+
+        UserResponse response = userPersistenceMysql.deleteUser("User1");
+
+        Assertions.assertEquals(response, userResponse);
     }
 }

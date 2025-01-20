@@ -21,4 +21,6 @@ public interface UserPersistence {
     List<UserResponse> getUsers() throws UsersNotFoundException;
 
     UserResponse getUser(String userName) throws UserNotFoundException, UserNameNotValid;
+
+    UserResponse deleteUser(String userName) throws UserNotFoundException, UserNameNotValid;
 }
