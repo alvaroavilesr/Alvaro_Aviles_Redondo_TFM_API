@@ -5,6 +5,7 @@ import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
 import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
 import es.upm.tfm.adapters.mysqldb.respository.RoleRepository;
 import es.upm.tfm.adapters.mysqldb.respository.UserRepository;
@@ -14,7 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserPersistenceMysql implements UserPersistence {
@@ -66,5 +69,18 @@ public class UserPersistenceMysql implements UserPersistence {
 
         return modelMapper.map(userRepository.save(user),UserResponse.class);
     }
+
+    public List<UserResponse> getUsers() throws UsersNotFoundException {
+        List<UserEntity> users = userRepository.findAll();
+
+        if (users.isEmpty()){
+            throw new UsersNotFoundException();
+        }else{
+            return users.stream()
+                    .map(user -> modelMapper.map(user, UserResponse.class))
+                    .collect(Collectors.toList());
+        }
+    }
+
 
 }

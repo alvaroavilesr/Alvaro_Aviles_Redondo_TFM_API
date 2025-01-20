@@ -3,8 +3,11 @@ package es.upm.tfm.domain.persistence_ports;
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface UserPersistence {
@@ -13,4 +16,5 @@ public interface UserPersistence {
 
     UserResponse createUser (NewUserDTO newUserDTO, String role) throws UserAlreadyExistingException, RoleNotFoundException;
 
+    List<UserResponse> getUsers() throws UsersNotFoundException;
 }
