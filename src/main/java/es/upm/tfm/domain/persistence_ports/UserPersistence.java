@@ -26,4 +26,6 @@ public interface UserPersistence {
     UserResponse deleteUser(String userName) throws UserNotFoundException, UserNameNotValid;
 
     UserResponse updateUser(UpdateUserDTO updateUserDTO, String userName) throws UserNotFoundException, UserNameNotValid;
+
+    UserResponse updateUserRole(String username, String role) throws UserNotFoundException, RoleNotFoundException, UserNameNotValid;
 }

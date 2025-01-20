@@ -121,4 +121,19 @@ public class UserPersistenceMysql implements UserPersistence {
         }
         return modelMapper.map(userRepository.save(user), UserResponse.class);
     }
+
+    public UserResponse updateUserRole (String userName, String roleName) throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        UserEntity user = userRepository.findById(userName).orElseThrow(() -> new UserNotFoundException(userName));
+        if(user.getRole().isEmpty()){
+            throw new UserNameNotValid(userName);
+        }
+        RoleEntity role = roleRepository.findById(roleName).orElseThrow(() -> new RoleNotFoundException(roleName));
+
+        Set<RoleEntity> roles = new HashSet<>();
+        roles.add(role);
+
+        user.setRole(roles);
+
+        return modelMapper.map(userRepository.save(user), UserResponse.class);
+    }
 }

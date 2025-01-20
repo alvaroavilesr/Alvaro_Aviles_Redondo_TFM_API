@@ -49,4 +49,8 @@ public class UserService {
     public UserResponse updateUser(UpdateUserDTO updateUserDTO, String userName) throws UserNotFoundException, UserNameNotValid {
         return this.userPersistence.updateUser(updateUserDTO, userName);
     }
+
+    public UserResponse updateUserRole(String username, String role) throws UserNotFoundException, RoleNotFoundException, UserNameNotValid{
+        return this.userPersistence.updateUserRole(username, role);
+    }
 }
