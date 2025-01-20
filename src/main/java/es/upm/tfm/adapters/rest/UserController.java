@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,4 +39,19 @@ public class UserController {
     public ResponseEntity<UserResponse> registerNewUser(@Valid @RequestBody NewUserDTO newUserDTO) throws UserAlreadyExistingException, RoleNotFoundException {
         return new ResponseEntity<>(userService.registerNewUser(newUserDTO), HttpStatus.OK);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User successfully created"),
+            @ApiResponse(responseCode = "400", description = "Mandatory fields not supplied"),
+            @ApiResponse(responseCode = "400", description = "UserName already existing"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "POST HTTP method endpoint for creating a new user - [ADMIN]")
+    @PostMapping({"/api/user/{role}"})
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody NewUserDTO newUserDTO, @PathVariable("role") String role) throws RoleNotFoundException, UserAlreadyExistingException {
+        return new ResponseEntity<>(userService.createUser(newUserDTO,role), HttpStatus.OK);
+    }
+
 }

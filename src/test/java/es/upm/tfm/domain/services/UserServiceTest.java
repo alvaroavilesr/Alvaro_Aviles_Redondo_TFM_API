@@ -62,4 +62,41 @@ class UserServiceTest {
             userPersistence.registerNewUser(newUserDTO);
         });
     }
+
+    @Test
+    public void testCreateNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
+        NewUserDTO newUserDTO = new NewUserDTO("Admin1",  "Admin", "1", "admin@example.com", "123");
+        RoleResponse roleResponse = new RoleResponse("Admin", "Admin role");
+        Set<RoleResponse> roleResponses = Set.of(roleResponse);
+        UserResponse userResponse = new UserResponse("Admin1",  "Admin", "1", "admin@example.com", roleResponses);
+
+        when(userService.createUser(newUserDTO, "Admin")).thenReturn(userResponse);
+
+        UserResponse response = userPersistence.createUser(newUserDTO, "Admin");
+
+        assertEquals(response, userResponse);
+    }
+
+    @Test
+    public void testCreateNewUserExceptionNotValid() throws UserAlreadyExistingException, RoleNotFoundException {
+        NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
+
+        when(userService.createUser(newUserDTO, "User")).thenThrow(RoleNotFoundException.class);
+
+        Assertions.assertThrows(RoleNotFoundException.class, () -> {
+            userPersistence.createUser(newUserDTO, "User");
+        });
+    }
+
+    @Test
+    public void testCreateNewUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
+        NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
+
+        when(userService.createUser(newUserDTO, "User")).thenThrow(UserAlreadyExistingException.class);
+
+        Assertions.assertThrows(UserAlreadyExistingException.class, () -> {
+            userPersistence.createUser(newUserDTO, "User");
+        });
+    }
+
 }

@@ -100,4 +100,55 @@ class UserPersistenceMysqlTest {
         verify(userRepository, times(1)).save(Mockito.any(UserEntity.class));
 
     }
+
+    @Test
+    public void CreateNewUserAlreadyExisting(){
+        NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
+        UserEntity user = new UserEntity("User1",  "User", "1");
+
+        Mockito.when(userRepository.findById(newUserDTO.getUserName())).thenReturn(Optional.of(user));
+
+        assertThrows(UserAlreadyExistingException.class, () -> {
+            userPersistenceMysql.createUser(newUserDTO, "User");
+        });
+    }
+
+    @Test
+    public void CreateNewUserRoleNotFound(){
+        NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
+
+        Mockito.when(userRepository.findById(newUserDTO.getUserName())).thenReturn(Optional.empty());
+        Mockito.when(roleRepository.findById("User")).thenReturn(Optional.empty());
+
+        assertThrows(RoleNotFoundException.class, () -> {
+            userPersistenceMysql.createUser(newUserDTO, "User");
+        });
+    }
+
+    @Test
+    public void CreateNewUser() throws UserAlreadyExistingException, RoleNotFoundException {
+        NewUserDTO newUserDTO = new NewUserDTO("Admin1",  "Admin", "1", "admin@example.com", "123");
+        RoleEntity role = new RoleEntity("Admin", "Admin role");
+
+        Set<RoleEntity> userRoles = new HashSet<>();
+        userRoles.add(role);
+
+        UserEntity user = new UserEntity("Admin1",  "Admin", "1",  userRoles);
+
+        Mockito.when(userRepository.findById(newUserDTO.getUserName())).thenReturn(Optional.empty());
+        Mockito.when(roleRepository.findById("Admin")).thenReturn(Optional.of(role));
+        Mockito.when(userRepository.save(Mockito.any(UserEntity.class))).thenReturn(user);
+
+        UserResponse userResponse = userPersistenceMysql.createUser(newUserDTO, "Admin");
+
+        Assertions.assertEquals("Admin1", userResponse.getUserName());
+        Assertions.assertEquals("Admin", userResponse.getUserFirstName());
+        Assertions.assertEquals("1", userResponse.getUserLastName());
+
+        verify(userRepository, times(1)).findById(newUserDTO.getUserName());
+        verify(roleRepository, times(1)).findById("Admin");
+        verify(userRepository, times(1)).save(Mockito.any(UserEntity.class));
+
+    }
+
 }

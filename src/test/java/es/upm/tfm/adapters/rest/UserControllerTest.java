@@ -69,4 +69,46 @@ class UserControllerTest {
 
         verify(userService, times(1)).registerNewUser(newUserDTO);
     }
+
+    @Test
+    public void testCreateUser() throws UserAlreadyExistingException, RoleNotFoundException {
+        NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        Set<RoleResponse> roleResponses = Set.of(roleResponse);
+        UserResponse userResponse = new UserResponse("User1",  "User", "1", "user@example.com", roleResponses);
+
+        when(userService.createUser(newUserDTO, "User")).thenReturn(userResponse);
+
+        ResponseEntity<UserResponse> response = userController.createUser(newUserDTO, "User");
+
+        assertEquals(userResponse, response.getBody());
+
+        verify(userService, times(1)).createUser(newUserDTO, "User");
+    }
+
+    @Test
+    public void testCreateUserExceptionNotFound() throws UserAlreadyExistingException, RoleNotFoundException {
+        NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
+
+        when(userService.createUser(newUserDTO, "Super admin")).thenThrow(RoleNotFoundException.class);
+
+        Assertions.assertThrows(RoleNotFoundException.class, () -> {
+            userController.createUser(newUserDTO, "Super admin");
+        });
+
+        verify(userService, times(1)).createUser(newUserDTO, "Super admin");
+    }
+
+    @Test
+    public void testCreateUserExceptionAlreadyExisting() throws UserAlreadyExistingException, RoleNotFoundException {
+        NewUserDTO newUserDTO = new NewUserDTO("User1",  "User", "1", "user@example.com", "123");
+
+        when(userService.createUser(newUserDTO, "User")).thenThrow(UserAlreadyExistingException.class);
+
+        Assertions.assertThrows(UserAlreadyExistingException.class, () -> {
+            userController.createUser(newUserDTO, "User");
+        });
+
+        verify(userService, times(1)).createUser(newUserDTO, "User");
+    }
 }
