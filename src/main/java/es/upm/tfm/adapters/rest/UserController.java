@@ -66,6 +66,7 @@ public class UserController {
     @GetMapping("/api/users")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<List<UserResponse>> getUsers() throws UsersNotFoundException {
+
         return new ResponseEntity<>(userService.getUsers(),HttpStatus.OK);
     }
 
@@ -106,5 +107,17 @@ public class UserController {
     @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
     public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserDTO updateUserDTO, @PathVariable("userName") String userName) throws UserNotFoundException, UserNameNotValid {
         return new ResponseEntity<>(userService.updateUser(updateUserDTO, userName),HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User role successfully updated"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "PUT HTTP method endpoint for updating the role of an user - [ADMIN]")
+    @PutMapping("/api/user/{userName}/{role}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<UserResponse> updateUserRole(@PathVariable("userName") String userName, @PathVariable("role") String role) throws UserNotFoundException, RoleNotFoundException, UserNameNotValid {
+        return new ResponseEntity<>(userService.updateUserRole(userName, role),HttpStatus.OK);
     }
 }
