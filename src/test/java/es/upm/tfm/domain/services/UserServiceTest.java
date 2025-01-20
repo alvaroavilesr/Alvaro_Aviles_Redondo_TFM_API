@@ -3,6 +3,8 @@ package es.upm.tfm.domain.services;
 import es.upm.tfm.adapters.mysqldb.dto.NewUserDTO;
 import es.upm.tfm.adapters.mysqldb.exception.role.RoleNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserAlreadyExistingException;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
+import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UsersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.RoleResponse;
 import es.upm.tfm.adapters.mysqldb.response.UserResponse;
@@ -122,4 +124,33 @@ class UserServiceTest {
         });
     }
 
+    @Test
+    public void testGetUser() throws UserNotFoundException, UserNameNotValid {
+        RoleResponse roleResponse = new RoleResponse("User", "User role");
+        UserResponse userResponse = new UserResponse("User1", "Alvaro", "Aviles", "alvaro@gmail.com",Set.of(roleResponse));
+
+        when(userService.getUser("User1")).thenReturn(userResponse);
+
+        UserResponse response = userPersistence.getUser("User1");
+
+        assertEquals(userResponse, response);
+    }
+
+    @Test
+    public void testGetUserExceptionUserNotFound() throws UserNotFoundException, UserNameNotValid {
+        when(userService.getUser("User1")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            userPersistence.getUser("User1");
+        });
+    }
+
+    @Test
+    public void testGetUserExceptionUserNameNotValid() throws UserNotFoundException, UserNameNotValid {
+        when(userService.getUser("User1")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            userPersistence.getUser("User1");
+        });
+    }
 }
