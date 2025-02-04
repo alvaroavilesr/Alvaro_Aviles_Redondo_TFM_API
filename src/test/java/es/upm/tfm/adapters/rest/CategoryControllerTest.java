@@ -3,6 +3,7 @@ package es.upm.tfm.adapters.rest;
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.domain.services.CategoryService;
 import org.junit.jupiter.api.Assertions;
@@ -81,5 +82,31 @@ class CategoryControllerTest {
         });
 
         verify(categoryService, times(1)).getCategories();
+    }
+
+    @Test
+    void testGetCategory() throws CategoryNotFoundException {
+        CategoryResponse categoryResponse = new CategoryResponse(1L,"Category1");
+
+        when(categoryService.findById(1L)).thenReturn(categoryResponse);
+
+        ResponseEntity<CategoryResponse> response = categoryController.getCategory(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(categoryResponse, response.getBody());
+
+        verify(categoryService, times(1)).findById(1L);
+    }
+
+    @Test
+    void testGetCategoryExceptionNoCategoryFound() throws CategoryNotFoundException {
+
+        when(categoryService.findById(1L)).thenThrow(CategoryNotFoundException.class);
+
+        Assertions.assertThrows(CategoryNotFoundException.class, () -> {
+            categoryController.getCategory(1L);
+        });
+
+        verify(categoryService, times(1)).findById(1L);
     }
 }

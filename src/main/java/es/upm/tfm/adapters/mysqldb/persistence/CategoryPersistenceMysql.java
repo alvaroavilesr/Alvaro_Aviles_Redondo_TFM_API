@@ -4,6 +4,7 @@ import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.respository.CategoryRepository;
 import es.upm.tfm.adapters.mysqldb.respository.ItemRepository;
@@ -51,5 +52,11 @@ public class CategoryPersistenceMysql implements CategoryPersistence {
                     .map(category -> modelMapper.map(category, CategoryResponse.class))
                     .toList();
         }
+    }
+
+    public CategoryResponse findById(Long id) throws CategoryNotFoundException {
+        return categoryRepository.findById(id)
+                .map(category -> modelMapper.map(category, CategoryResponse.class))
+                .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 }

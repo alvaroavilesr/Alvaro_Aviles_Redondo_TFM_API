@@ -2,6 +2,7 @@ package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.domain.persistence_ports.CategoryPersistence;
 import org.junit.jupiter.api.Assertions;
@@ -43,6 +44,27 @@ class CategoryServiceTest {
 
         Assertions.assertThrows(CategoryNameAlreadyExisting.class, () -> {
             categoryPersistence.saveCategory(categoryDTO);
+        });
+    }
+
+    @Test
+    void testGetCategory() throws CategoryNotFoundException {
+        CategoryResponse categoryResponse = new CategoryResponse(1L,"Category1");
+
+        when(categoryService.findById(1L)).thenReturn(categoryResponse);
+
+        CategoryResponse response = categoryPersistence.findById(1L);
+
+        assertEquals(categoryResponse, response);
+    }
+
+    @Test
+    void testGetCategoryExceptionNoCategoryFound() throws CategoryNotFoundException {
+
+        when(categoryService.findById(1L)).thenThrow(CategoryNotFoundException.class);
+
+        Assertions.assertThrows(CategoryNotFoundException.class, () -> {
+            categoryPersistence.findById(1L);
         });
     }
 }
