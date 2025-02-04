@@ -2,6 +2,7 @@ package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryAlreadyAttachedToAnItem;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
@@ -33,5 +34,9 @@ public class CategoryService {
 
     public CategoryResponse findById(Long id) throws CategoryNotFoundException {
         return this.categoryPersistence.findById(id);
+    }
+
+    public CategoryResponse deleteById(Long id) throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException {
+        return this.categoryPersistence.deleteById(id);
     }
 }

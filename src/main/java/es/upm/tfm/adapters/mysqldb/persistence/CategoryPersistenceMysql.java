@@ -3,6 +3,7 @@ package es.upm.tfm.adapters.mysqldb.persistence;
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryAlreadyAttachedToAnItem;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
@@ -58,5 +59,18 @@ public class CategoryPersistenceMysql implements CategoryPersistence {
         return categoryRepository.findById(id)
                 .map(category -> modelMapper.map(category, CategoryResponse.class))
                 .orElseThrow(() -> new CategoryNotFoundException(id));
+    }
+
+    public CategoryResponse deleteById(Long id) throws CategoryNotFoundException, CategoryAlreadyAttachedToAnItem {
+        boolean categoryAttachedToAnItem = itemRepository.findAll().stream()
+                .noneMatch(item -> Objects.equals(item.getCategory().getCategoryId(), id));
+        if(!categoryAttachedToAnItem){
+            throw new CategoryAlreadyAttachedToAnItem(id);
+        }
+        CategoryResponse response = categoryRepository.findById(id)
+                .map(category -> modelMapper.map(category, CategoryResponse.class))
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+        categoryRepository.deleteById(id);
+        return response;
     }
 }
