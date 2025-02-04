@@ -2,6 +2,7 @@ package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryAlreadyAttachedToAnItem;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
@@ -68,5 +69,18 @@ public class CategoryController {
     @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
     public ResponseEntity<CategoryResponse> getCategory(@PathVariable Long id) throws CategoryNotFoundException {
         return new ResponseEntity<>(categoryService.findById(id), HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "DELETE HTTP method endpoint for deleting a category by its id - [ADMIN][VENDOR]")
+    @DeleteMapping(value = "/category/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor')")
+    public ResponseEntity<CategoryResponse> deleteCategory(@PathVariable Long id) throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException {
+        return new ResponseEntity<>(categoryService.deleteById(id), HttpStatus.OK);
     }
 }
