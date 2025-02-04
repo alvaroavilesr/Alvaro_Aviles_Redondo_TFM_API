@@ -2,6 +2,7 @@ package es.upm.tfm.adapters.mysqldb;
 
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.persistence.CategoryPersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
@@ -15,9 +16,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryPersistenceMysqlTest {
@@ -56,5 +60,37 @@ class CategoryPersistenceMysqlTest {
         CategoryResponse response = categoryPersistenceMysql.saveCategory(categoryDTO);
 
         Assertions.assertEquals("Category2", response.getName());
+
+        verify(categoryRepository, times(1)).findAll();
+        verify(categoryRepository, times(1)).save(Mockito.any(CategoryEntity.class));
+    }
+
+    @Test
+    void GetCategoriesNoCategoriesFound() {
+
+        Mockito.when(categoryRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertThrows(CategoriesNotFoundException.class, () -> {
+            categoryPersistenceMysql.getCategories();
+        });
+
+        verify(categoryRepository, times(1)).findAll();
+    }
+
+    @Test
+    void GetCategories() throws CategoriesNotFoundException {
+        CategoryEntity categoryEntity1 = new CategoryEntity(1L, "Category1");
+        CategoryEntity categoryEntity2 = new CategoryEntity(2L, "Category2");
+        CategoryResponse categoryResponse1 = new CategoryResponse(1L, "Category1");
+        CategoryResponse categoryResponse2 = new CategoryResponse(2L, "Category2");
+
+        Mockito.when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity1, categoryEntity2));
+
+        List<CategoryResponse> response = categoryPersistenceMysql.getCategories();
+
+        Assertions.assertEquals(response, List.of(categoryResponse1, categoryResponse2));
+
+        verify(categoryRepository, times(1)).findAll();
+
     }
 }
