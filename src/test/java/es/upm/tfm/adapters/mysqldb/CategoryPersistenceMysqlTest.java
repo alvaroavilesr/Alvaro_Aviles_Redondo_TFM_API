@@ -175,4 +175,39 @@ class CategoryPersistenceMysqlTest {
         verify(itemRepository, times(1)).findAll();
         verify(categoryRepository, times(1)).findById(1L);
     }
+
+    @Test
+    void UpdateCategoryCategoryNotFound() {
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        CategoryDTO categoryDTO = new CategoryDTO("Category2");
+
+        Mockito.when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity));
+        Mockito.when(categoryRepository.findById(10L)).thenReturn(Optional.empty());
+
+        assertThrows(CategoryNotFoundException.class, () -> {
+            categoryPersistenceMysql.updateCategory(10L, categoryDTO);
+        });
+
+        verify(categoryRepository, times(1)).findAll();
+        verify(categoryRepository, times(1)).findById(10L);
+    }
+
+    @Test
+    void UpdateCategory() throws CategoryNameAlreadyExisting, CategoryNotFoundException {
+        CategoryEntity categoryEntity1 = new CategoryEntity(1L, "Category1");
+        CategoryEntity categoryEntity2 = new CategoryEntity(1L, "Category3");
+        CategoryDTO categoryDTO = new CategoryDTO("Category3");
+
+        Mockito.when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity1));
+        Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryEntity1));
+        Mockito.when(categoryRepository.save(Mockito.any(CategoryEntity.class))).thenReturn(categoryEntity2);
+
+        CategoryResponse categoryResponse = categoryPersistenceMysql.updateCategory(1L, categoryDTO);
+
+        Assertions.assertEquals("Category3", categoryResponse.getName());
+
+        verify(categoryRepository, times(1)).findAll();
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(categoryRepository, times(1)).save(Mockito.any(CategoryEntity.class));
+    }
 }
