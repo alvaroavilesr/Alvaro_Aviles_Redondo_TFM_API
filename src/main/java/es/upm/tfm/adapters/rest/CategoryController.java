@@ -1,6 +1,7 @@
 package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.domain.services.CategoryService;
@@ -13,12 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -45,4 +44,16 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.saveCategory(categoryDTO), HttpStatus.OK);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category successfully retrieved"),
+            @ApiResponse(responseCode = "404", description = "Categories not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "CGET HTTP method endpoint for listing all categories - [ADMIN][VENDOR][USER]")
+    @GetMapping("/categories")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<List<CategoryResponse>> getCategories() throws CategoriesNotFoundException {
+        return new ResponseEntity<>(categoryService.getCategories(), HttpStatus.OK);
+    }
 }
