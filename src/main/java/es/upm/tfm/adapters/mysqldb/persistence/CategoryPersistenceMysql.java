@@ -2,6 +2,7 @@ package es.upm.tfm.adapters.mysqldb.persistence;
 
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.respository.CategoryRepository;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Objects;
 
 @Repository
@@ -37,5 +39,17 @@ public class CategoryPersistenceMysql implements CategoryPersistence {
         CategoryEntity category = modelMapper.map(categoryDTO, CategoryEntity.class);
         CategoryEntity savedCategory = categoryRepository.save(category);
         return modelMapper.map(savedCategory, CategoryResponse.class);
+    }
+
+    public List<CategoryResponse> getCategories() throws CategoriesNotFoundException {
+        List<CategoryEntity> categories = categoryRepository.findAll();
+
+        if (categories.isEmpty()){
+            throw new CategoriesNotFoundException();
+        }else{
+            return categories.stream()
+                    .map(category -> modelMapper.map(category, CategoryResponse.class))
+                    .toList();
+        }
     }
 }
