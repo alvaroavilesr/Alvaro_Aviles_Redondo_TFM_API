@@ -2,6 +2,7 @@ package es.upm.tfm.domain.persistence_ports;
 
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryAlreadyAttachedToAnItem;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
@@ -90,6 +91,37 @@ class CategoryPersistenceTest {
 
         Assertions.assertThrows(CategoryNotFoundException.class, () -> {
             categoryPersistence.findById(1L);
+        });
+    }
+
+    @Test
+    void testDeleteCategory() throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException {
+        CategoryResponse categoryResponse = new CategoryResponse(1L,"Category1");
+
+        when(categoryService.deleteById(1L)).thenReturn(categoryResponse);
+
+        CategoryResponse response = categoryPersistence.deleteById(1L);
+
+        assertEquals(categoryResponse, response);
+    }
+
+    @Test
+    void testGetCategoryExceptionCategoryAlreadyAttachedToAnItem() throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException {
+
+        when(categoryService.deleteById(1L)).thenThrow(CategoryAlreadyAttachedToAnItem.class);
+
+        Assertions.assertThrows(CategoryAlreadyAttachedToAnItem.class, () -> {
+            categoryPersistence.deleteById(1L);
+        });
+    }
+
+    @Test
+    void testGetCategoryExceptionCategoryNotFound() throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException {
+
+        when(categoryService.deleteById(1L)).thenThrow(CategoryNotFoundException.class);
+
+        Assertions.assertThrows(CategoryNotFoundException.class, () -> {
+            categoryPersistence.deleteById(1L);
         });
     }
 }

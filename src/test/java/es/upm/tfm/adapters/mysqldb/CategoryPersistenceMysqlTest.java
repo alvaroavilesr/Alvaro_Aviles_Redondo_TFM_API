@@ -2,12 +2,15 @@ package es.upm.tfm.adapters.mysqldb;
 
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
+import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryAlreadyAttachedToAnItem;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.persistence.CategoryPersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.respository.CategoryRepository;
+import es.upm.tfm.adapters.mysqldb.respository.ItemRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +33,9 @@ class CategoryPersistenceMysqlTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private ItemRepository itemRepository;
 
     @Mock
     private ModelMapper modelMapper;
@@ -121,5 +127,52 @@ class CategoryPersistenceMysqlTest {
 
         verify(categoryRepository, times(1)).findById(Mockito.any(Long.class));
 
+    }
+
+    @Test
+    void DeleteCategoryCategoryAlreadyAttachedToAnItem() {
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        ItemEntity itemEntity = new ItemEntity(1L, "Item1", "Description","Description", "M", 1, "Image", categoryEntity);
+
+        Mockito.when(itemRepository.findAll()).thenReturn(List.of(itemEntity));
+
+        assertThrows(CategoryAlreadyAttachedToAnItem.class, () -> {
+            categoryPersistenceMysql.deleteById(1L);
+        });
+
+        verify(itemRepository, times(1)).findAll();
+    }
+
+    @Test
+    void DeleteCategoryCategoryNotFound() {
+        CategoryEntity categoryEntity = new CategoryEntity(10L, "Category10");
+        ItemEntity itemEntity = new ItemEntity(1L, "Item1", "Description","Description", "M", 1, "Image", categoryEntity);
+
+        Mockito.when(itemRepository.findAll()).thenReturn(List.of(itemEntity));
+        Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(CategoryNotFoundException.class, () -> {
+            categoryPersistenceMysql.deleteById(1L);
+        });
+
+        verify(itemRepository, times(1)).findAll();
+        verify(categoryRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void DeleteCategory() throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException {
+        CategoryEntity categoryEntity = new CategoryEntity(10L, "Category10");
+        CategoryEntity categoryEntity1 = new CategoryEntity(1L, "Category1");
+        ItemEntity itemEntity = new ItemEntity(1L, "Item1", "Description","Description", "M", 1, "Image", categoryEntity);
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+        Mockito.when(itemRepository.findAll()).thenReturn(List.of(itemEntity));
+        Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryEntity1));
+
+        CategoryResponse response =  categoryPersistenceMysql.deleteById(1L);
+
+        Assertions.assertEquals(response, categoryResponse);
+
+        verify(itemRepository, times(1)).findAll();
+        verify(categoryRepository, times(1)).findById(1L);
     }
 }
