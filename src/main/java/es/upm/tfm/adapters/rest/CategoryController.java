@@ -3,9 +3,9 @@ package es.upm.tfm.adapters.rest;
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.domain.services.CategoryService;
-import es.upm.tfm.domain.services.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -55,5 +55,18 @@ public class CategoryController {
     @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
     public ResponseEntity<List<CategoryResponse>> getCategories() throws CategoriesNotFoundException {
         return new ResponseEntity<>(categoryService.getCategories(), HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category successfully retrieved"),
+            @ApiResponse(responseCode = "404", description = "Categories not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "GET HTTP method endpoint for getting a category by its id - [ADMIN][VENDOR][USER]")
+    @GetMapping(value = "/category/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<CategoryResponse> getCategory(@PathVariable Long id) throws CategoryNotFoundException {
+        return new ResponseEntity<>(categoryService.findById(id), HttpStatus.OK);
     }
 }

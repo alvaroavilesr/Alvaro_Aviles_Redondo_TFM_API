@@ -4,6 +4,7 @@ import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.persistence.CategoryPersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.respository.CategoryRepository;
@@ -18,6 +19,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.times;
@@ -91,6 +93,33 @@ class CategoryPersistenceMysqlTest {
         Assertions.assertEquals(response, List.of(categoryResponse1, categoryResponse2));
 
         verify(categoryRepository, times(1)).findAll();
+
+    }
+
+    @Test
+    void GetCategoryNoCategoryFound() {
+
+        Mockito.when(categoryRepository.findById(Mockito.any(Long.class))).thenReturn(Optional.empty());
+
+        assertThrows(CategoryNotFoundException.class, () -> {
+            categoryPersistenceMysql.findById(1L);
+        });
+
+        verify(categoryRepository, times(1)).findById(Mockito.any(Long.class));
+    }
+
+    @Test
+    void GetCategory() throws CategoryNotFoundException {
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+
+        Mockito.when(categoryRepository.findById(Mockito.any(Long.class))).thenReturn(Optional.of(categoryEntity));
+
+        CategoryResponse response = categoryPersistenceMysql.findById(1L);
+
+        Assertions.assertEquals(response, categoryResponse);
+
+        verify(categoryRepository, times(1)).findById(Mockito.any(Long.class));
 
     }
 }

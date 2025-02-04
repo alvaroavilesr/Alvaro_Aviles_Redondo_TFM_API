@@ -3,6 +3,7 @@ package es.upm.tfm.domain.persistence_ports;
 import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoriesNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.domain.services.CategoryService;
 import org.junit.jupiter.api.Assertions;
@@ -11,11 +12,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryPersistenceTest {
@@ -68,6 +71,27 @@ class CategoryPersistenceTest {
 
         Assertions.assertThrows(CategoriesNotFoundException.class, () -> {
             categoryPersistence.getCategories();
+        });
+    }
+
+    @Test
+    void testGetCategory() throws CategoryNotFoundException {
+        CategoryResponse categoryResponse = new CategoryResponse(1L,"Category1");
+
+        when(categoryService.findById(1L)).thenReturn(categoryResponse);
+
+        CategoryResponse response = categoryPersistence.findById(1L);
+
+        assertEquals(categoryResponse, response);
+    }
+
+    @Test
+    void testGetCategoryExceptionNoCategoryFound() throws CategoryNotFoundException {
+
+        when(categoryService.findById(1L)).thenThrow(CategoryNotFoundException.class);
+
+        Assertions.assertThrows(CategoryNotFoundException.class, () -> {
+            categoryPersistence.findById(1L);
         });
     }
 }
