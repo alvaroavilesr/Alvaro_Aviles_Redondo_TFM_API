@@ -73,4 +73,15 @@ public class CategoryPersistenceMysql implements CategoryPersistence {
         categoryRepository.deleteById(id);
         return response;
     }
+
+    public CategoryResponse updateCategory(Long id, CategoryDTO categoryDTO) throws CategoryNotFoundException, CategoryNameAlreadyExisting {
+        boolean categoryAlreadyExisting = categoryRepository.findAll().stream()
+                .noneMatch(category -> Objects.equals(category.getName(), categoryDTO.getName()));
+        if(!categoryAlreadyExisting){
+            throw new CategoryNameAlreadyExisting();
+        }
+        CategoryEntity category = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+        category.setName(categoryDTO.getName());
+        return modelMapper.map(categoryRepository.save(category), CategoryResponse.class);
+    }
 }

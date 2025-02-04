@@ -20,4 +20,6 @@ public interface CategoryPersistence {
     CategoryResponse findById(Long id) throws CategoryNotFoundException;
 
     CategoryResponse deleteById(Long id) throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException;
+
+    CategoryResponse updateCategory(Long id, CategoryDTO categoryDTO) throws CategoryNotFoundException, CategoryNameAlreadyExisting;
 }
