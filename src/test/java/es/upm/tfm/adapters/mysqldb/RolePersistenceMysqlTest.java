@@ -40,7 +40,7 @@ class RolePersistenceMysqlTest {
     private RolePersistenceMysql rolePersistenceMysql;
 
     @Test
-    void CreateRoleRoleNotValid() throws RoleAlreadyExistingException, RoleNotValidException {
+    void CreateRoleRoleNotValid() {
         RoleDTO roleDTO = new RoleDTO("SuperAdmin", "Super admin user role");
 
         assertThrows(RoleNotValidException.class, () -> {

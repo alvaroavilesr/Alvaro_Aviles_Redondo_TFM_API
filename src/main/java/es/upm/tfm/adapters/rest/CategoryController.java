@@ -4,6 +4,7 @@ import es.upm.tfm.adapters.mysqldb.dto.CategoryDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNameAlreadyExisting;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.domain.services.CategoryService;
+import es.upm.tfm.domain.services.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -24,8 +25,12 @@ import javax.validation.Valid;
 @Tag(name = "Categories", description = "Endpoints for managing the categories of the items")
 public class CategoryController {
 
+    private final CategoryService categoryService;
+
     @Autowired
-    private CategoryService categoryService;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category successfully created"),
