@@ -124,4 +124,38 @@ class CategoryPersistenceTest {
             categoryPersistence.deleteById(1L);
         });
     }
+
+    @Test
+    void testUpdateCategory() throws CategoryNameAlreadyExisting, CategoryNotFoundException {
+        CategoryDTO categoryDTO = new CategoryDTO("Category1");
+        CategoryResponse categoryResponse = new CategoryResponse(1L,"Category1");
+
+        when(categoryService.updateCategory(1L, categoryDTO)).thenReturn(categoryResponse);
+
+        CategoryResponse response = categoryPersistence.updateCategory(1L, categoryDTO);
+
+        assertEquals(categoryResponse, response);
+    }
+
+    @Test
+    void testUpdateCategoryExceptionCategoryNameAlreadyExisting() throws CategoryNameAlreadyExisting, CategoryNotFoundException {
+        CategoryDTO categoryDTO = new CategoryDTO("Category1");
+
+        when(categoryService.updateCategory(1L,categoryDTO)).thenThrow(CategoryNameAlreadyExisting.class);
+
+        Assertions.assertThrows(CategoryNameAlreadyExisting.class, () -> {
+            categoryPersistence.updateCategory(1L,categoryDTO);
+        });
+    }
+
+    @Test
+    void testUpdateCategoryExceptionCategoryNotFound() throws CategoryNameAlreadyExisting, CategoryNotFoundException {
+        CategoryDTO categoryDTO = new CategoryDTO("Category1");
+
+        when(categoryService.updateCategory(1L,categoryDTO)).thenThrow(CategoryNotFoundException.class);
+
+        Assertions.assertThrows(CategoryNotFoundException.class, () -> {
+            categoryPersistence.updateCategory(1L,categoryDTO);
+        });
+    }
 }

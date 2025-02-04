@@ -83,4 +83,17 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> deleteCategory(@PathVariable Long id) throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException {
         return new ResponseEntity<>(categoryService.deleteById(id), HttpStatus.OK);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Category successfully updated"),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "PUT HTTP method endpoint for deleting a category by its id - [ADMIN][VENDOR]")
+    @PutMapping(value = "/category/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor')")
+    public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryDTO categoryDTO) throws CategoryNotFoundException, CategoryNameAlreadyExisting {
+        return new ResponseEntity<>(categoryService.updateCategory(id, categoryDTO), HttpStatus.OK);
+    }
 }

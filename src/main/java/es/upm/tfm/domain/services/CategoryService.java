@@ -39,4 +39,8 @@ public class CategoryService {
     public CategoryResponse deleteById(Long id) throws CategoryAlreadyAttachedToAnItem, CategoryNotFoundException {
         return this.categoryPersistence.deleteById(id);
     }
+
+    public CategoryResponse updateCategory(Long id, CategoryDTO categoryDTO) throws CategoryNotFoundException, CategoryNameAlreadyExisting {
+        return this.categoryPersistence.updateCategory(id, categoryDTO);
+    }
 }
