@@ -177,6 +177,20 @@ class CategoryPersistenceMysqlTest {
     }
 
     @Test
+    void UpdateCategoryCategoryNameAlreadyExisting() {
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        CategoryDTO categoryDTO = new CategoryDTO("Category1");
+
+        Mockito.when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity));
+
+        assertThrows(CategoryNameAlreadyExisting.class, () -> {
+            categoryPersistenceMysql.updateCategory(1L, categoryDTO);
+        });
+
+        verify(categoryRepository, times(1)).findAll();
+    }
+
+    @Test
     void UpdateCategoryCategoryNotFound() {
         CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
         CategoryDTO categoryDTO = new CategoryDTO("Category2");
