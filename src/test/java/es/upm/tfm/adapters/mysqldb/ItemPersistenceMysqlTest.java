@@ -187,4 +187,38 @@ class ItemPersistenceMysqlTest {
         verify(itemOrderRepository, times(1)).findAll();
         verify(itemRepository, times(1)).findById(1L);
     }
+
+    @Test
+    void UpdateItemItemNotFound() {
+
+        ItemDTO itemDTO = new ItemDTO("Item", "Item1", "Item1", "S", 1L, "Image");
+
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ItemNotFoundException.class, () -> {
+            itemPersistenceMysql.updateItem(1L,itemDTO);
+        });
+
+        verify(itemRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void UpdateItem() throws ItemNotFoundException {
+
+        ItemDTO itemDTO = new ItemDTO("Item", "Item1", "Item1", "S", 1L, "Image");
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        ItemEntity itemEntity = new ItemEntity(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryEntity);
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(itemEntity));
+        Mockito.when(itemRepository.save(Mockito.any(ItemEntity.class))).thenReturn(itemEntity);
+
+        ItemResponse response = itemPersistenceMysql.updateItem(1L,itemDTO);
+
+        Assertions.assertEquals(response, itemResponse);
+
+        verify(itemRepository, times(1)).findById(1L);
+        verify(itemRepository, times(1)).save(Mockito.any(ItemEntity.class));
+    }
 }

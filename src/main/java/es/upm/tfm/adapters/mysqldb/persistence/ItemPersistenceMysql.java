@@ -78,4 +78,15 @@ public class ItemPersistenceMysql implements ItemPersistence {
         itemRepository.deleteById(id);
         return response;
     }
+
+    public ItemResponse updateItem(Long id, ItemDTO itemDTO) throws ItemNotFoundException {
+        ItemEntity item = itemRepository.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
+        item.setName(itemDTO.getName());
+        item.setDescription(itemDTO.getDescription());
+        item.setPrice(itemDTO.getPrice());
+        item.setLongDescription(itemDTO.getLongDescription());
+        item.setSize(itemDTO.getSize());
+        item.setImage(itemDTO.getImage());
+        return modelMapper.map(itemRepository.save(item), ItemResponse.class);
+    }
 }

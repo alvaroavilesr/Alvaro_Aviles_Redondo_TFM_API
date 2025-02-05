@@ -39,4 +39,8 @@ public class ItemService {
     public ItemResponse deleteById(Long id) throws ItemNotFoundException, ItemAlreadyInAnOrderException {
         return this.itemPersistence.deleteById(id);
     }
+
+    public ItemResponse updateItem(Long id, ItemDTO itemDTO) throws ItemNotFoundException {
+        return this.itemPersistence.updateItem(id, itemDTO);
+    }
 }

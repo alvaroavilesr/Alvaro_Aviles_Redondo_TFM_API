@@ -142,7 +142,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void testDeleteItemd() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+    void testDeleteItem() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
 
         ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", null);
 
@@ -154,5 +154,37 @@ class ItemControllerTest {
         assertEquals(itemResponse, response.getBody());
 
         verify(itemService, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testUpdateItemItemNotFound() throws ItemNotFoundException {
+
+        ItemDTO itemDTO = new ItemDTO("Item", "Item1", "Item1", "S", 1L, "Image");
+
+        when(itemService.updateItem(1L, itemDTO)).thenThrow(ItemNotFoundException.class);
+
+        Assertions.assertThrows(ItemNotFoundException.class, () -> {
+            itemController.updateItem(1L, itemDTO);
+        });
+
+        verify(itemService, times(1)).updateItem(1L, itemDTO);
+    }
+
+    @Test
+    void testUpdateItem() throws ItemNotFoundException {
+
+        ItemDTO itemDTO = new ItemDTO("Item", "Item1", "Item1", "S", 1L, "Image");
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        when(itemService.updateItem(1L, itemDTO)).thenReturn(itemResponse);
+
+
+        ResponseEntity<ItemResponse> response = itemController.updateItem(1L, itemDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(itemResponse, response.getBody());
+
+        verify(itemService, times(1)).updateItem(1L, itemDTO);
     }
 }

@@ -83,4 +83,17 @@ public class ItemController {
     public ResponseEntity<ItemResponse> deleteItem(@PathVariable Long id) throws ItemNotFoundException, ItemAlreadyInAnOrderException {
         return new ResponseEntity<>(itemService.deleteById(id), HttpStatus.OK);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Item successfully updated"),
+            @ApiResponse(responseCode = "404", description = "Item not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "PUT HTTP method endpoint for updating an item by its id - [ADMIN][VENDOR]")
+    @PutMapping(value = "/item/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor')")
+    public ResponseEntity<ItemResponse> updateItem(@PathVariable Long id, @Valid @RequestBody ItemDTO itemDTO) throws ItemNotFoundException {
+        return new ResponseEntity<>(itemService.updateItem(id, itemDTO), HttpStatus.OK);
+    }
 }
