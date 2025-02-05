@@ -2,6 +2,7 @@ package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemAlreadyInAnOrderException;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
@@ -68,5 +69,18 @@ public class ItemController {
     @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
     public ResponseEntity<ItemResponse> getItem(@PathVariable Long id) throws ItemNotFoundException {
         return new ResponseEntity<>(itemService.findById(id), HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Item successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Item not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "DELETE HTTP method endpoint for deleting an item by its id - [ADMIN][VENDOR]")
+    @DeleteMapping(value = "/item/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor')")
+    public ResponseEntity<ItemResponse> deleteItem(@PathVariable Long id) throws ItemNotFoundException, ItemAlreadyInAnOrderException {
+        return new ResponseEntity<>(itemService.deleteById(id), HttpStatus.OK);
     }
 }

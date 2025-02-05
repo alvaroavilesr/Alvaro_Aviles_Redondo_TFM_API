@@ -2,6 +2,8 @@ package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemAlreadyInAnOrderException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
@@ -73,5 +75,37 @@ class ItemServiceTest {
         List<ItemResponse> response = itemService.getStock();
 
         assertEquals(List.of(itemResponse), response);
+    }
+
+    @Test
+    void testDeleteItemItemAlreadyInAnOrder() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        when(itemPersistence.deleteById(1L)).thenThrow(ItemAlreadyInAnOrderException.class);
+
+        Assertions.assertThrows(ItemAlreadyInAnOrderException.class, () -> {
+            itemService.deleteById(1L);
+        });
+    }
+
+    @Test
+    void testDeleteItemItemNotFound() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        when(itemPersistence.deleteById(1L)).thenThrow(ItemNotFoundException.class);
+
+        Assertions.assertThrows(ItemNotFoundException.class, () -> {
+            itemService.deleteById(1L);
+        });
+    }
+
+    @Test
+    void testDeleteItemd() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", null);
+
+        when(itemPersistence.deleteById(1L)).thenReturn(itemResponse);
+
+        ItemResponse response = itemService.deleteById(1L);
+
+        assertEquals(itemResponse, response);
     }
 }
