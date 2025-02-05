@@ -46,7 +46,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    void testCreateRoleExceptionNameAlreadyExisting() throws CategoryNameAlreadyExisting {
+    void testSaveCategoryExceptionNameAlreadyExisting() throws CategoryNameAlreadyExisting {
         CategoryDTO categoryDTO = new CategoryDTO("Category1");
 
         when(categoryService.saveCategory(categoryDTO)).thenThrow(CategoryNameAlreadyExisting.class);
