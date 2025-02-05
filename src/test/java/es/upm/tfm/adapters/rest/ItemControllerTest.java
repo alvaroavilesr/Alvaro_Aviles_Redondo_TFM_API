@@ -2,6 +2,7 @@ package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
 import es.upm.tfm.domain.services.ItemService;
@@ -13,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -54,5 +57,33 @@ class ItemControllerTest {
         });
 
         verify(itemService, times(1)).saveItem("Category1", itemDTO);
+    }
+
+    @Test
+    void testGetItemsNoItemsFound() throws NoItemsFoundException {
+
+        when(itemService.getStock()).thenThrow(NoItemsFoundException.class);
+
+        Assertions.assertThrows(NoItemsFoundException.class, () -> {
+            itemController.getItems();
+        });
+
+        verify(itemService, times(1)).getStock();
+    }
+
+    @Test
+    void testGetItems() throws NoItemsFoundException {
+
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        when(itemService.getStock()).thenReturn(List.of(itemResponse));
+
+        ResponseEntity<List<ItemResponse>> response = itemController.getItems();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(List.of(itemResponse), response.getBody());
+
+        verify(itemService, times(1)).getStock();
     }
 }

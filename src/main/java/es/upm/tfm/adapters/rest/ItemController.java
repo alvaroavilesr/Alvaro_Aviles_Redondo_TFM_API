@@ -2,6 +2,7 @@ package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
 import es.upm.tfm.domain.services.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -39,5 +41,18 @@ public class ItemController {
     @PreAuthorize("hasRole('Admin') or hasRole('Vendor')")
     public ResponseEntity<ItemResponse> saveItem(@PathVariable String category, @Valid @RequestBody ItemDTO itemDTO) throws CategoryNotFoundException {
         return new ResponseEntity<>(itemService.saveItem(category, itemDTO), HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Items successfully retrieved"),
+            @ApiResponse(responseCode = "404", description = "Items not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "CGET HTTP method endpoint for listing all items - [ADMIN][VENDOR][USER]")
+    @GetMapping("/items")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<List<ItemResponse>> getItems() throws NoItemsFoundException {
+        return new ResponseEntity<>(itemService.getStock(), HttpStatus.OK);
     }
 }
