@@ -221,4 +221,55 @@ class ItemPersistenceMysqlTest {
         verify(itemRepository, times(1)).findById(1L);
         verify(itemRepository, times(1)).save(Mockito.any(ItemEntity.class));
     }
+
+    @Test
+    void UpdateItemCategoryItemNotFound() {
+
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ItemNotFoundException.class, () -> {
+            itemPersistenceMysql.updateItemCategory(1L,"NewCategory");
+        });
+
+        verify(itemRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void UpdateItemCategoryCategoryNotFound() {
+
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        ItemEntity itemEntity = new ItemEntity(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryEntity);
+
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(itemEntity));
+        Mockito.when(categoryRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertThrows(CategoryNotFoundException.class, () -> {
+            itemPersistenceMysql.updateItemCategory(1L,"NewCategory");
+        });
+
+        verify(itemRepository, times(1)).findById(1L);
+        verify(categoryRepository, times(1)).findAll();
+    }
+
+    @Test
+    void UpdateItemCategory() throws CategoryNotFoundException, ItemNotFoundException {
+
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        CategoryEntity categoryEntity2 = new CategoryEntity(1L, "NewCategory");
+        ItemEntity itemEntity = new ItemEntity(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryEntity);
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "NewCategory");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(itemEntity));
+        Mockito.when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity2));
+        Mockito.when(itemRepository.save(Mockito.any(ItemEntity.class))).thenReturn(itemEntity);
+
+        ItemResponse response = itemPersistenceMysql.updateItemCategory(1L,"NewCategory");
+
+        Assertions.assertEquals(response, itemResponse);
+
+        verify(itemRepository, times(1)).findById(1L);
+        verify(categoryRepository, times(1)).findAll();
+        verify(itemRepository, times(1)).save(Mockito.any(ItemEntity.class));
+    }
 }

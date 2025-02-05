@@ -134,4 +134,37 @@ class ItemServiceTest {
 
         assertEquals(itemResponse, response);
     }
+
+    @Test
+    void testUpdateItemCategoryItemNotFound() throws CategoryNotFoundException, ItemNotFoundException {
+
+        when(itemPersistence.updateItemCategory(1L, "NewCategory")).thenThrow(ItemNotFoundException.class);
+
+        Assertions.assertThrows(ItemNotFoundException.class, () -> {
+            itemService.updateItemCategory(1L, "NewCategory");
+        });
+    }
+
+    @Test
+    void testUpdateItemCategoryCategoryNotFound() throws CategoryNotFoundException, ItemNotFoundException {
+
+        when(itemPersistence.updateItemCategory(1L, "NewCategory")).thenThrow(CategoryNotFoundException.class);
+
+        Assertions.assertThrows(CategoryNotFoundException.class, () -> {
+            itemService.updateItemCategory(1L, "NewCategory");
+        });
+    }
+
+    @Test
+    void testUpdateItemCategory() throws CategoryNotFoundException, ItemNotFoundException {
+
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "NewCategory");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        when(itemPersistence.updateItemCategory(1L, "NewCategory")).thenReturn(itemResponse);
+
+        ItemResponse response = itemService.updateItemCategory(1L, "NewCategory");
+
+        Assertions.assertEquals(itemResponse, response);
+    }
 }

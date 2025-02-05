@@ -89,4 +89,16 @@ public class ItemPersistenceMysql implements ItemPersistence {
         item.setImage(itemDTO.getImage());
         return modelMapper.map(itemRepository.save(item), ItemResponse.class);
     }
+
+    public ItemResponse updateItemCategory(Long id, String category) throws ItemNotFoundException, CategoryNotFoundException {
+        ItemEntity item = itemRepository.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
+
+        List<CategoryEntity> categories = categoryRepository.findAll().stream()
+                .filter(cat -> cat.getName().equals(category)).toList();
+        if (categories.isEmpty()){
+            throw new CategoryNotFoundException(null);
+        }
+        item.setCategory(categories.get(0));
+        return modelMapper.map(itemRepository.save(item), ItemResponse.class);
+    }
 }

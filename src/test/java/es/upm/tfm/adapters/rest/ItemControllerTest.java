@@ -187,4 +187,45 @@ class ItemControllerTest {
 
         verify(itemService, times(1)).updateItem(1L, itemDTO);
     }
+
+    @Test
+    void testUpdateItemCategoryItemNotFound() throws CategoryNotFoundException, ItemNotFoundException {
+
+        when(itemService.updateItemCategory(1L, "NewCategory")).thenThrow(ItemNotFoundException.class);
+
+        Assertions.assertThrows(ItemNotFoundException.class, () -> {
+            itemController.updateItemCategory(1L, "NewCategory");
+        });
+
+        verify(itemService, times(1)).updateItemCategory(1L, "NewCategory");
+    }
+
+    @Test
+    void testUpdateItemCategoryCategoryNotFound() throws CategoryNotFoundException, ItemNotFoundException {
+
+        when(itemService.updateItemCategory(1L, "NewCategory")).thenThrow(CategoryNotFoundException.class);
+
+        Assertions.assertThrows(CategoryNotFoundException.class, () -> {
+            itemController.updateItemCategory(1L, "NewCategory");
+        });
+
+        verify(itemService, times(1)).updateItemCategory(1L, "NewCategory");
+    }
+
+    @Test
+    void testUpdateItemCategory() throws CategoryNotFoundException, ItemNotFoundException {
+
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "NewCategory");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        when(itemService.updateItemCategory(1L, "NewCategory")).thenReturn(itemResponse);
+
+
+        ResponseEntity<ItemResponse> response = itemController.updateItemCategory(1L, "NewCategory");
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(itemResponse, response.getBody());
+
+        verify(itemService, times(1)).updateItemCategory(1L, "NewCategory");
+    }
 }

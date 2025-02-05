@@ -96,4 +96,18 @@ public class ItemController {
     public ResponseEntity<ItemResponse> updateItem(@PathVariable Long id, @Valid @RequestBody ItemDTO itemDTO) throws ItemNotFoundException {
         return new ResponseEntity<>(itemService.updateItem(id, itemDTO), HttpStatus.OK);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Item category successfully updated"),
+            @ApiResponse(responseCode = "404", description = "Item not found"),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "PUT HTTP method endpoint for updating an item category by its id - [ADMIN][VENDOR]")
+    @PutMapping(value = "/item/{id}/{category}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor')")
+    public ResponseEntity<ItemResponse> updateItemCategory (@PathVariable Long id, @PathVariable String category) throws ItemNotFoundException, CategoryNotFoundException {
+        return new ResponseEntity<>(itemService.updateItemCategory(id, category), HttpStatus.OK);
+    }
 }
