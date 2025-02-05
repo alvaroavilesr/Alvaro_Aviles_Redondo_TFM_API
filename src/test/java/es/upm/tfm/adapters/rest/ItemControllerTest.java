@@ -1,9 +1,8 @@
 package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
-import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
-import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemAlreadyInAnOrderException;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
@@ -91,7 +90,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void testGetItemNo() throws ItemNotFoundException {
+    void testGetItemNoItemFound() throws ItemNotFoundException {
 
         when(itemService.findById(1L)).thenThrow(ItemNotFoundException.class);
 
@@ -116,5 +115,44 @@ class ItemControllerTest {
         assertEquals(itemResponse, response.getBody());
 
         verify(itemService, times(1)).findById(1L);
+    }
+
+    @Test
+    void testDeleteItemItemAlreadyInAnOrder() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        when(itemService.deleteById(1L)).thenThrow(ItemAlreadyInAnOrderException.class);
+
+        Assertions.assertThrows(ItemAlreadyInAnOrderException.class, () -> {
+            itemController.deleteItem(1L);
+        });
+
+        verify(itemService, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteItemItemNotFound() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        when(itemService.deleteById(1L)).thenThrow(ItemNotFoundException.class);
+
+        Assertions.assertThrows(ItemNotFoundException.class, () -> {
+            itemController.deleteItem(1L);
+        });
+
+        verify(itemService, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteItemd() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", null);
+
+        when(itemService.deleteById(1L)).thenReturn(itemResponse);
+
+        ResponseEntity<ItemResponse> response = itemController.deleteItem(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(itemResponse, response.getBody());
+
+        verify(itemService, times(1)).deleteById(1L);
     }
 }

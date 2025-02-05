@@ -3,13 +3,16 @@ package es.upm.tfm.adapters.mysqldb;
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
 import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
+import es.upm.tfm.adapters.mysqldb.entity.ItemOrderEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemAlreadyInAnOrderException;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.persistence.ItemPersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
 import es.upm.tfm.adapters.mysqldb.respository.CategoryRepository;
+import es.upm.tfm.adapters.mysqldb.respository.ItemOrderRepository;
 import es.upm.tfm.adapters.mysqldb.respository.ItemRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,9 @@ class ItemPersistenceMysqlTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private ItemOrderRepository itemOrderRepository;
 
     @Mock
     private ModelMapper modelMapper;
@@ -133,6 +139,52 @@ class ItemPersistenceMysqlTest {
 
         Assertions.assertEquals(response, itemResponse);
 
+        verify(itemRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void DeleteByIdItemAlreadyInAnOrder() {
+
+        ItemEntity itemEntity = new ItemEntity(1L,"Item", "Item1", "Item1", "S", 1L, "Image", null);
+        ItemOrderEntity itemOrderEntity = new ItemOrderEntity(1L, 2L, itemEntity);
+
+        Mockito.when(itemOrderRepository.findAll()).thenReturn(List.of(itemOrderEntity));
+
+        assertThrows(ItemAlreadyInAnOrderException.class, () -> {
+            itemPersistenceMysql.deleteById(1L);
+        });
+
+        verify(itemOrderRepository, times(1)).findAll();
+    }
+
+    @Test
+    void DeleteByIdItemNotFound() {
+
+        Mockito.when(itemOrderRepository.findAll()).thenReturn(Collections.emptyList());
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ItemNotFoundException.class, () -> {
+            itemPersistenceMysql.deleteById(1L);
+        });
+
+        verify(itemOrderRepository, times(1)).findAll();
+        verify(itemRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void DeleteById() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        ItemEntity itemEntity = new ItemEntity(1L,"Item", "Item1", "Item1", "S", 1L, "Image", null);
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", null);
+
+        Mockito.when(itemOrderRepository.findAll()).thenReturn(Collections.emptyList());
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(itemEntity));
+
+        ItemResponse Response = itemPersistenceMysql.deleteById(1L);
+
+        Assertions.assertEquals(Response, itemResponse);
+
+        verify(itemOrderRepository, times(1)).findAll();
         verify(itemRepository, times(1)).findById(1L);
     }
 }

@@ -2,6 +2,7 @@ package es.upm.tfm.domain.persistence_ports;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemAlreadyInAnOrderException;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
@@ -13,13 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ItemPersistenceTest {
@@ -99,6 +98,37 @@ class ItemPersistenceTest {
         ItemResponse response = itemService.findById(1L);
 
         assertEquals(itemResponse, response);
+    }
 
+    @Test
+    void testDeleteItemItemAlreadyInAnOrder() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        when(itemPersistence.deleteById(1L)).thenThrow(ItemAlreadyInAnOrderException.class);
+
+        Assertions.assertThrows(ItemAlreadyInAnOrderException.class, () -> {
+            itemService.deleteById(1L);
+        });
+    }
+
+    @Test
+    void testDeleteItemItemNotFound() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        when(itemPersistence.deleteById(1L)).thenThrow(ItemNotFoundException.class);
+
+        Assertions.assertThrows(ItemNotFoundException.class, () -> {
+            itemService.deleteById(1L);
+        });
+    }
+
+    @Test
+    void testDeleteItemd() throws ItemAlreadyInAnOrderException, ItemNotFoundException {
+
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", null);
+
+        when(itemPersistence.deleteById(1L)).thenReturn(itemResponse);
+
+        ItemResponse response = itemService.deleteById(1L);
+
+        assertEquals(itemResponse, response);
     }
 }

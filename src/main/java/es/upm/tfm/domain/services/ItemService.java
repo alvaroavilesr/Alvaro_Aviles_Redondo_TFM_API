@@ -2,6 +2,7 @@ package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemAlreadyInAnOrderException;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
@@ -33,5 +34,9 @@ public class ItemService {
 
     public ItemResponse findById(Long id) throws ItemNotFoundException {
         return this.itemPersistence.findById(id);
+    }
+
+    public ItemResponse deleteById(Long id) throws ItemNotFoundException, ItemAlreadyInAnOrderException {
+        return this.itemPersistence.deleteById(id);
     }
 }
