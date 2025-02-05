@@ -1,0 +1,73 @@
+package es.upm.tfm.adapters.mysqldb;
+
+import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
+import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
+import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
+import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.persistence.ItemPersistenceMysql;
+import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
+import es.upm.tfm.adapters.mysqldb.respository.CategoryRepository;
+import es.upm.tfm.adapters.mysqldb.respository.ItemRepository;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+
+import java.util.List;
+
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+class ItemPersistenceMysqlTest {
+
+    @Mock
+    private ItemRepository itemRepository;
+
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @InjectMocks
+    private ItemPersistenceMysql itemPersistenceMysql;
+
+    @Test
+    void SaveItemCategoryNotFound() {
+
+        ItemDTO itemDTO = new ItemDTO("Item", "Item1", "Item1", "S", 1L, "Image");
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+
+        Mockito.when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity));
+
+        assertThrows(CategoryNotFoundException.class, () -> {
+            itemPersistenceMysql.saveItem("category2", itemDTO);
+        });
+    }
+
+    @Test
+    void SaveItem() throws CategoryNotFoundException {
+
+        ItemDTO itemDTO = new ItemDTO("Item", "Item1", "Item1", "S", 1L, "Image");
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        ItemEntity itemEntity = new ItemEntity(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryEntity);
+
+        Mockito.when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity));
+        Mockito.when(itemRepository.save(Mockito.any(ItemEntity.class))).thenReturn(itemEntity);
+
+        ItemResponse itemResponse = itemPersistenceMysql.saveItem("Category1", itemDTO);
+
+        Assertions.assertEquals(itemResponse.getName(), itemEntity.getName());
+        Assertions.assertEquals(itemResponse.getDescription(), itemEntity.getDescription());
+        Assertions.assertEquals(itemResponse.getCategory().getName(), itemEntity.getCategory().getName());
+
+        verify(categoryRepository, times(1)).findAll();
+        verify(itemRepository, times(1)).save(Mockito.any(ItemEntity.class));
+    }
+}
