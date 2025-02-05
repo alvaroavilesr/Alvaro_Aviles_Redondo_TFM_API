@@ -4,6 +4,7 @@ import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
 import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.persistence.ItemPersistenceMysql;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
@@ -21,6 +22,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.times;
@@ -103,5 +105,34 @@ class ItemPersistenceMysqlTest {
         Assertions.assertEquals(response, List.of(itemResponse));
 
         verify(itemRepository, times(1)).findAll();
+    }
+
+    @Test
+    void FindByIdItemNotFound() {
+
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ItemNotFoundException.class, () -> {
+            itemPersistenceMysql.findById(1L);
+        });
+
+        verify(itemRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void FindById() throws ItemNotFoundException {
+
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        ItemEntity itemEntity = new ItemEntity(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryEntity);
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(itemEntity));
+
+        ItemResponse response = itemPersistenceMysql.findById(1L);
+
+        Assertions.assertEquals(response, itemResponse);
+
+        verify(itemRepository, times(1)).findById(1L);
     }
 }

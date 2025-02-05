@@ -1,7 +1,10 @@
 package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
+import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
+import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
@@ -85,5 +88,33 @@ class ItemControllerTest {
         assertEquals(List.of(itemResponse), response.getBody());
 
         verify(itemService, times(1)).getStock();
+    }
+
+    @Test
+    void testGetItemNo() throws ItemNotFoundException {
+
+        when(itemService.findById(1L)).thenThrow(ItemNotFoundException.class);
+
+        Assertions.assertThrows(ItemNotFoundException.class, () -> {
+            itemController.getItem(1L);
+        });
+
+        verify(itemService, times(1)).findById(1L);
+    }
+
+    @Test
+    void testGet() throws ItemNotFoundException {
+
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        when(itemService.findById(1L)).thenReturn(itemResponse);
+
+        ResponseEntity<ItemResponse> response = itemController.getItem(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(itemResponse, response.getBody());
+
+        verify(itemService, times(1)).findById(1L);
     }
 }
