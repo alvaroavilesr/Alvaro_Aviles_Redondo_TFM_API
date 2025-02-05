@@ -4,6 +4,7 @@ import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
 import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
 import es.upm.tfm.adapters.mysqldb.respository.CategoryRepository;
@@ -52,5 +53,11 @@ public class ItemPersistenceMysql implements ItemPersistence {
                     .map(item -> modelMapper.map(item, ItemResponse.class))
                     .toList();
         }
+    }
+
+    public ItemResponse findById(Long id) throws ItemNotFoundException {
+        return itemRepository.findById(id)
+                .map(item -> modelMapper.map(item, ItemResponse.class))
+                .orElseThrow(() -> new ItemNotFoundException(id));
     }
 }

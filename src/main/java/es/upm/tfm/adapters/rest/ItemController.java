@@ -2,6 +2,7 @@ package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
 import es.upm.tfm.domain.services.ItemService;
@@ -54,5 +55,18 @@ public class ItemController {
     @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
     public ResponseEntity<List<ItemResponse>> getItems() throws NoItemsFoundException {
         return new ResponseEntity<>(itemService.getStock(), HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Item successfully retrieved"),
+            @ApiResponse(responseCode = "404", description = "Item not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "GET HTTP method endpoint for getting an item by its id - [ADMIN][VENDOR][USER]")
+    @GetMapping(value = "/item/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<ItemResponse> getItem(@PathVariable Long id) throws ItemNotFoundException {
+        return new ResponseEntity<>(itemService.findById(id), HttpStatus.OK);
     }
 }

@@ -2,6 +2,7 @@ package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
 import es.upm.tfm.domain.persistence_ports.ItemPersistence;
@@ -30,4 +31,7 @@ public class ItemService {
         return this.itemPersistence.getStock();
     }
 
+    public ItemResponse findById(Long id) throws ItemNotFoundException {
+        return this.itemPersistence.findById(id);
+    }
 }
