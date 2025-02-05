@@ -43,4 +43,8 @@ public class ItemService {
     public ItemResponse updateItem(Long id, ItemDTO itemDTO) throws ItemNotFoundException {
         return this.itemPersistence.updateItem(id, itemDTO);
     }
+
+    public ItemResponse updateItemCategory(Long id, String category) throws ItemNotFoundException, CategoryNotFoundException {
+        return this.itemPersistence.updateItemCategory(id, category);
+    }
 }

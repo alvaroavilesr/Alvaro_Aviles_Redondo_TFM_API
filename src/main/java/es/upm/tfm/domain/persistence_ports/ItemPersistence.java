@@ -22,4 +22,6 @@ public interface ItemPersistence {
     ItemResponse deleteById(Long id) throws ItemNotFoundException, ItemAlreadyInAnOrderException;
 
     ItemResponse updateItem(Long id, ItemDTO itemDTO) throws ItemNotFoundException;
+
+    ItemResponse updateItemCategory(Long id, String category) throws ItemNotFoundException, CategoryNotFoundException;
 }
