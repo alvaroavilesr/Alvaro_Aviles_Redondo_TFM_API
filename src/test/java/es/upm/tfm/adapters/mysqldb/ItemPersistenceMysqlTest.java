@@ -4,7 +4,9 @@ import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.entity.CategoryEntity;
 import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.persistence.ItemPersistenceMysql;
+import es.upm.tfm.adapters.mysqldb.response.CategoryResponse;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
 import es.upm.tfm.adapters.mysqldb.respository.CategoryRepository;
 import es.upm.tfm.adapters.mysqldb.respository.ItemRepository;
@@ -17,6 +19,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
@@ -49,6 +52,8 @@ class ItemPersistenceMysqlTest {
         assertThrows(CategoryNotFoundException.class, () -> {
             itemPersistenceMysql.saveItem("category2", itemDTO);
         });
+
+        verify(categoryRepository, times(1)).findAll();
     }
 
     @Test
@@ -69,5 +74,34 @@ class ItemPersistenceMysqlTest {
 
         verify(categoryRepository, times(1)).findAll();
         verify(itemRepository, times(1)).save(Mockito.any(ItemEntity.class));
+    }
+
+    @Test
+    void GetStockNoItemsFound() {
+
+        Mockito.when(itemRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertThrows(NoItemsFoundException.class, () -> {
+            itemPersistenceMysql.getStock();
+        });
+
+        verify(itemRepository, times(1)).findAll();
+    }
+
+    @Test
+    void GetStock() {
+
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Category1");
+        ItemEntity itemEntity = new ItemEntity(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryEntity);
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        Mockito.when(itemRepository.findAll()).thenReturn(List.of(itemEntity));
+
+        List<ItemResponse> response = itemPersistenceMysql.getStock();
+
+        Assertions.assertEquals(response, List.of(itemResponse));
+
+        verify(itemRepository, times(1)).findAll();
     }
 }

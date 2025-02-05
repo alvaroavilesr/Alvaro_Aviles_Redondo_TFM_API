@@ -2,11 +2,14 @@ package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.ItemDTO;
 import es.upm.tfm.adapters.mysqldb.exception.category.CategoryNotFoundException;
+import es.upm.tfm.adapters.mysqldb.exception.item.NoItemsFoundException;
 import es.upm.tfm.adapters.mysqldb.response.ItemResponse;
 import es.upm.tfm.domain.persistence_ports.ItemPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ItemService {
@@ -21,6 +24,10 @@ public class ItemService {
 
     public ItemResponse saveItem(String category, ItemDTO itemDTO) throws CategoryNotFoundException {
         return this.itemPersistence.saveItem(category, itemDTO);
+    }
+
+    public List<ItemResponse> getStock() throws NoItemsFoundException {
+        return this.itemPersistence.getStock();
     }
 
 }
