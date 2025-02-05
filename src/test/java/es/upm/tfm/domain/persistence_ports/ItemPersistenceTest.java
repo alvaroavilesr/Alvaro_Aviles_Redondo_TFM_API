@@ -131,4 +131,30 @@ class ItemPersistenceTest {
 
         assertEquals(itemResponse, response);
     }
+
+    @Test
+    void testUpdateItemItemNotFound() throws ItemNotFoundException {
+
+        ItemDTO itemDTO = new ItemDTO("Item", "Item1", "Item1", "S", 1L, "Image");
+
+        when(itemPersistence.updateItem(1L, itemDTO)).thenThrow(ItemNotFoundException.class);
+
+        Assertions.assertThrows(ItemNotFoundException.class, () -> {
+            itemService.updateItem(1L, itemDTO);
+        });
+    }
+
+    @Test
+    void testUpdateItem() throws ItemNotFoundException {
+
+        ItemDTO itemDTO = new ItemDTO("Item", "Item1", "Item1", "S", 1L, "Image");
+        CategoryResponse categoryResponse = new CategoryResponse(1L, "Category1");
+        ItemResponse itemResponse = new ItemResponse(1L,"Item", "Item1", "Item1", "S", 1L, "Image", categoryResponse);
+
+        when(itemPersistence.updateItem(1L, itemDTO)).thenReturn(itemResponse);
+
+        ItemResponse response = itemService.updateItem(1L, itemDTO);
+
+        assertEquals(itemResponse, response);
+    }
 }

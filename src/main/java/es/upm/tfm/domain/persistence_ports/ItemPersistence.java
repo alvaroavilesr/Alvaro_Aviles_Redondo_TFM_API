@@ -20,4 +20,6 @@ public interface ItemPersistence {
     ItemResponse findById(Long id) throws ItemNotFoundException;
 
     ItemResponse deleteById(Long id) throws ItemNotFoundException, ItemAlreadyInAnOrderException;
+
+    ItemResponse updateItem(Long id, ItemDTO itemDTO) throws ItemNotFoundException;
 }
