@@ -26,6 +26,8 @@ import org.modelmapper.ModelMapper;
 import java.util.*;
 
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class OrderPersistenceMysqlTest {
@@ -55,6 +57,8 @@ class OrderPersistenceMysqlTest {
         assertThrows(UserNotFoundException.class, () -> {
             orderPersistenceMysql.saveOrder(orderDTO, "User1");
         });
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
     }
 
     @Test
@@ -68,6 +72,8 @@ class OrderPersistenceMysqlTest {
         assertThrows(UserNameNotValid.class, () -> {
             orderPersistenceMysql.saveOrder(orderDTO, "User1");
         });
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
     }
 
     @Test
@@ -85,6 +91,8 @@ class OrderPersistenceMysqlTest {
         assertThrows(OrderItemIdsAndMountsNotValidException.class, () -> {
             orderPersistenceMysql.saveOrder(orderDTO, "User1");
         });
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
     }
 
     @Test
@@ -103,6 +111,9 @@ class OrderPersistenceMysqlTest {
         assertThrows(ItemNotFoundException.class, () -> {
             orderPersistenceMysql.saveOrder(orderDTO, "User1");
         });
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
+        verify(itemRepository, times(1)).findById(Mockito.any(Long.class));
     }
 
     @Test
@@ -126,6 +137,10 @@ class OrderPersistenceMysqlTest {
         OrderResponse response = orderPersistenceMysql.saveOrder(orderDTO, "User1");
 
         Assertions.assertEquals(response, orderResponse);
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
+        verify(itemRepository, times(1)).findById(Mockito.any(Long.class));
+        verify(orderRepository, times(1)).save(Mockito.any(OrderEntity.class));
     }
 }
 
