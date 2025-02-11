@@ -3,6 +3,7 @@ package es.upm.tfm.adapters.rest;
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
@@ -17,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.management.ListenerNotFoundException;
 import java.util.Date;
 import java.util.List;
 
@@ -131,5 +131,32 @@ class OrderControllerTest {
         assertEquals(List.of(orderResponse1, orderResponse2), response.getBody());
 
         verify(orderService, times(1)).getAllOrders();
+    }
+
+    @Test
+    void testGetOrderOrderNotFound() throws OrderNotFoundException {
+
+        when(orderService.findById(1L)).thenThrow(OrderNotFoundException.class);
+
+        Assertions.assertThrows(OrderNotFoundException.class, () -> {
+            orderController.findById(1L);
+        });
+
+        verify(orderService, times(1)).findById(1L);
+    }
+
+    @Test
+    void testGetOrder() throws OrderNotFoundException {
+
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, null);
+
+        when(orderService.findById(1L)).thenReturn(orderResponse);
+
+        ResponseEntity<OrderResponse> response = orderController.findById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(orderResponse, response.getBody());
+
+        verify(orderService, times(1)).findById(1L);
     }
 }

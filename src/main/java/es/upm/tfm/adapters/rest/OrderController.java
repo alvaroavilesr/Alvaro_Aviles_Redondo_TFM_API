@@ -3,6 +3,7 @@ package es.upm.tfm.adapters.rest;
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
@@ -56,5 +57,17 @@ public class OrderController {
     @PreAuthorize("hasRole('Admin') or hasRole('Vendor')")
     public ResponseEntity<List<OrderResponse>> getAllOrders() throws OrdersNotFoundException {
         return new ResponseEntity<>(orderService.getAllOrders(), HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order successfully retrieved"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "GET HTTP method endpoint for getting an order - [ADMIN][VENDOR][USER]")
+    @GetMapping("/order/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<OrderResponse> findById(@PathVariable Long id) throws OrderNotFoundException {
+        return new ResponseEntity<>(orderService.findById(id), HttpStatus.OK);
     }
 }

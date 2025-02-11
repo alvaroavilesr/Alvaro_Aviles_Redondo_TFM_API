@@ -3,6 +3,7 @@ package es.upm.tfm.domain.persistence_ports;
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
@@ -14,14 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrderPersistenceTest {
@@ -114,5 +113,27 @@ class OrderPersistenceTest {
 
         assertEquals(List.of(orderResponse1, orderResponse2), response);
 
+    }
+
+    @Test
+    void testGetOrderOrderNotFound() throws OrderNotFoundException {
+
+        when(orderPersistence.findById(1L)).thenThrow(OrderNotFoundException.class);
+
+        Assertions.assertThrows(OrderNotFoundException.class, () -> {
+            orderService.findById(1L);
+        });
+    }
+
+    @Test
+    void testGetOrder() throws OrderNotFoundException {
+
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, null);
+
+        when(orderPersistence.findById(1L)).thenReturn(orderResponse);
+
+        OrderResponse response = orderService.findById(1L);
+
+        assertEquals(orderResponse, response);
     }
 }

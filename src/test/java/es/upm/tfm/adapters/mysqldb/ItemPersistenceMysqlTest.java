@@ -180,9 +180,9 @@ class ItemPersistenceMysqlTest {
         Mockito.when(itemOrderRepository.findAll()).thenReturn(Collections.emptyList());
         Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(itemEntity));
 
-        ItemResponse Response = itemPersistenceMysql.deleteById(1L);
+        ItemResponse response = itemPersistenceMysql.deleteById(1L);
 
-        Assertions.assertEquals(Response, itemResponse);
+        Assertions.assertEquals(response, itemResponse);
 
         verify(itemOrderRepository, times(1)).findAll();
         verify(itemRepository, times(1)).findById(1L);
