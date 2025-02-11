@@ -3,6 +3,7 @@ package es.upm.tfm.adapters.rest;
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.OrderResponse;
@@ -18,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -42,5 +44,17 @@ public class OrderController {
     @PreAuthorize("hasRole('Admin') or hasRole('User') or hasRole('Vendor')")
     public ResponseEntity<OrderResponse> saveOrder(@PathVariable String userName, @Valid @RequestBody OrderDTO orderDTO) throws UserNotFoundException, UserNameNotValid, OrderItemIdsAndMountsNotValidException, ItemNotFoundException {
         return new ResponseEntity<>(orderService.saveOrder(orderDTO, userName), HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Orders successfully retrieved"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "CGET HTTP method endpoint for getting all orders - [ADMIN][VENDOR]")
+    @GetMapping("/orders")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor')")
+    public ResponseEntity<List<OrderResponse>> getAllOrders() throws OrdersNotFoundException {
+        return new ResponseEntity<>(orderService.getAllOrders(), HttpStatus.OK);
     }
 }

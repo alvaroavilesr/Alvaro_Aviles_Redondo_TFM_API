@@ -1,15 +1,14 @@
 package es.upm.tfm.adapters.mysqldb;
 
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
-import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
-import es.upm.tfm.adapters.mysqldb.entity.OrderEntity;
-import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
-import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
+import es.upm.tfm.adapters.mysqldb.entity.*;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.persistence.OrderPersistenceMysql;
+import es.upm.tfm.adapters.mysqldb.response.ItemOrderResponse;
 import es.upm.tfm.adapters.mysqldb.response.OrderResponse;
 import es.upm.tfm.adapters.mysqldb.respository.ItemRepository;
 import es.upm.tfm.adapters.mysqldb.respository.OrderRepository;
@@ -141,6 +140,44 @@ class OrderPersistenceMysqlTest {
         verify(userRepository, times(1)).findById(Mockito.any(String.class));
         verify(itemRepository, times(1)).findById(Mockito.any(Long.class));
         verify(orderRepository, times(1)).save(Mockito.any(OrderEntity.class));
+    }
+
+    @Test
+    void GetAllOrdersOrdersNotFound() throws OrdersNotFoundException {
+
+        Mockito.when(orderRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertThrows(OrdersNotFoundException.class, () -> {
+            orderPersistenceMysql.getAllOrders();
+        });
+
+        verify(orderRepository, times(1)).findAll();
+    }
+
+    @Test
+    void GetAllOrders() throws OrdersNotFoundException {
+
+        Set<RoleEntity> roles = new HashSet<>();
+        RoleEntity role = new RoleEntity("Admin", "Role for admins");
+        roles.add(role);
+
+        UserEntity user = new UserEntity("User1", "Alvaro", "Avilés", roles);
+
+        OrderEntity order1 = new OrderEntity(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", user, new HashSet<>());
+        OrderEntity order2 = new OrderEntity(2L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", user, new HashSet<>());
+
+        Set<ItemOrderResponse> itemOrders = new HashSet<>();
+
+        OrderResponse orderResponse1 = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, itemOrders);
+        OrderResponse orderResponse2 = new OrderResponse(2L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, itemOrders);
+
+        Mockito.when(orderRepository.findAll()).thenReturn(List.of(order1,order2));
+
+        List<OrderResponse> response = orderPersistenceMysql.getAllOrders();
+
+        Assertions.assertEquals(List.of(orderResponse1,orderResponse2), response);
+
+        verify(orderRepository, times(1)).findAll();
     }
 }
 
