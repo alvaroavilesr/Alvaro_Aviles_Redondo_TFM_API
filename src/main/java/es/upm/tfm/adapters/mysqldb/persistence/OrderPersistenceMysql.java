@@ -7,6 +7,7 @@ import es.upm.tfm.adapters.mysqldb.entity.OrderEntity;
 import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
 import es.upm.tfm.adapters.mysqldb.response.OrderResponse;
@@ -83,5 +84,25 @@ public class OrderPersistenceMysql implements OrderPersistence {
         orderResponse.setItemAmount(itemsOrder.stream().mapToInt(item -> Math.toIntExact(item.getAmount())).sum());
 
         return orderResponse;
+    }
+
+    @Transactional
+    public List<OrderResponse> getAllOrders() throws OrdersNotFoundException {
+        List<OrderEntity> orders = orderRepository.findAll();
+
+        if (orders.isEmpty()){
+            throw new OrdersNotFoundException();
+        }else{
+            List<OrderResponse> orderResponses = orders.stream()
+                    .map(order -> modelMapper.map(order, OrderResponse.class))
+                    .toList();
+            orderResponses.forEach(orderResponse -> orderResponse.setPrice(
+                    orderResponse.getItemsOrder().stream().mapToDouble(item -> item.getAmount() * item.getItem().getPrice()).sum())
+            );
+            orderResponses.forEach(orderResponse -> orderResponse.setItemAmount(orderResponse.getItemsOrder().stream().mapToInt(
+                    item -> Math.toIntExact(item.getAmount())
+            ).sum()));
+            return orderResponses;
+        }
     }
 }
