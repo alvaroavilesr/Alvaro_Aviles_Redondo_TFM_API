@@ -3,6 +3,7 @@ package es.upm.tfm.domain.services;
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
@@ -31,5 +32,9 @@ public class OrderService {
 
     public List<OrderResponse> getAllOrders() throws OrdersNotFoundException {
         return this.orderPersistence.getAllOrders();
+    }
+
+    public OrderResponse findById(Long id) throws OrderNotFoundException {
+        return this.orderPersistence.findById(id);
     }
 }

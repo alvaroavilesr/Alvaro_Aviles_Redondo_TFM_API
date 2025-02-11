@@ -3,6 +3,7 @@ package es.upm.tfm.domain.persistence_ports;
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
@@ -15,7 +16,9 @@ import java.util.List;
 public interface OrderPersistence {
 
     OrderResponse saveOrder(OrderDTO orderDTO, String userName) throws UserNotFoundException, UserNameNotValid, OrderItemIdsAndMountsNotValidException, ItemNotFoundException;
+
     List<OrderResponse> getAllOrders() throws OrdersNotFoundException;
 
+    OrderResponse findById(Long id) throws OrderNotFoundException;
 }
 

@@ -4,6 +4,7 @@ import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
 import es.upm.tfm.adapters.mysqldb.entity.*;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
@@ -179,5 +180,37 @@ class OrderPersistenceMysqlTest {
 
         verify(orderRepository, times(1)).findAll();
     }
-}
 
+    @Test
+    void GetOrdersOrderNotFound() throws OrderNotFoundException {
+
+        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(OrderNotFoundException.class, () -> {
+            orderPersistenceMysql.findById(1L);
+        });
+
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void GetOrder() throws OrderNotFoundException {
+
+        Set<RoleEntity> roles = new HashSet<>();
+        RoleEntity role = new RoleEntity("Admin", "Role for admins");
+        roles.add(role);
+
+        UserEntity user = new UserEntity("User1", "Alvaro", "Avilés", roles);
+        OrderEntity order = new OrderEntity(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", user, new HashSet<>());
+        Set<ItemOrderResponse> itemOrders = new HashSet<>();
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, itemOrders);
+
+        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        OrderResponse response = orderPersistenceMysql.findById(1L);
+
+        Assertions.assertEquals(orderResponse, response);
+
+        verify(orderRepository, times(1)).findById(1L);
+    }
+}

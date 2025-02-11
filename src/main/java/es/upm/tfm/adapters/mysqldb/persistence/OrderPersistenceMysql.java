@@ -7,6 +7,7 @@ import es.upm.tfm.adapters.mysqldb.entity.OrderEntity;
 import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
+import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
@@ -104,5 +105,17 @@ public class OrderPersistenceMysql implements OrderPersistence {
             ).sum()));
             return orderResponses;
         }
+    }
+
+    @Transactional
+    public OrderResponse findById(Long id) throws OrderNotFoundException {
+        OrderResponse orderResponse = orderRepository.findById(id)
+                .map(order -> modelMapper.map(order, OrderResponse.class))
+                .orElseThrow(() -> new OrderNotFoundException(id));
+        orderResponse.setPrice(orderResponse.getItemsOrder().stream().mapToDouble(item -> item.getItem().getPrice() * item.getAmount()).sum());
+        orderResponse.setItemAmount(orderResponse.getItemsOrder().stream().mapToInt(
+                item -> Math.toIntExact(item.getAmount())
+        ).sum());
+        return orderResponse;
     }
 }
