@@ -213,4 +213,73 @@ class OrderPersistenceMysqlTest {
 
         verify(orderRepository, times(1)).findById(1L);
     }
+
+    @Test
+    void GetAllOrdersOfAnUserUserNotFound() {
+
+        Mockito.when(userRepository.findById(Mockito.any(String.class))).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> {
+            orderPersistenceMysql.getAllOrdersOfAnUser("User1");
+        });
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
+    }
+
+    @Test
+    void GetAllOrdersOfAnUserUsernameNotValid() {
+
+        UserEntity user = new UserEntity("User1",  "User", "1", Collections.emptySet());
+
+        Mockito.when(userRepository.findById(Mockito.any(String.class))).thenReturn(Optional.of(user));
+
+        assertThrows(UserNameNotValid.class, () -> {
+            orderPersistenceMysql.getAllOrdersOfAnUser("User1");
+        });
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
+    }
+
+    @Test
+    void GetAllOrdersOfAnUserOrdersNotFound() {
+
+        Set<RoleEntity> roles = new HashSet<>();
+        RoleEntity role = new RoleEntity("Admin", "Role for admins");
+        roles.add(role);
+
+        UserEntity user = new UserEntity("User1", "Alvaro", "Avilés", roles);
+
+        Mockito.when(userRepository.findById(Mockito.any(String.class))).thenReturn(Optional.of(user));
+        Mockito.when(orderRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertThrows(OrdersNotFoundException.class, () -> {
+            orderPersistenceMysql.getAllOrdersOfAnUser("User1");
+        });
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
+        verify(orderRepository, times(1)).findAll();
+    }
+
+    @Test
+    void GetAllOrdersOfAnUser() throws UserNotFoundException, OrdersNotFoundException, UserNameNotValid {
+
+        Set<RoleEntity> roles = new HashSet<>();
+        RoleEntity role = new RoleEntity("Admin", "Role for admins");
+        roles.add(role);
+
+        UserEntity user = new UserEntity("User1", "Alvaro", "Avilés", roles);
+        OrderEntity order = new OrderEntity(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", user, new HashSet<>());
+        Set<ItemOrderResponse> itemOrders = new HashSet<>();
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, itemOrders);
+
+        Mockito.when(userRepository.findById(Mockito.any(String.class))).thenReturn(Optional.of(user));
+        Mockito.when(orderRepository.findAll()).thenReturn(List.of(order));
+
+        List<OrderResponse> response = orderPersistenceMysql.getAllOrdersOfAnUser("User1");
+
+        Assertions.assertEquals(List.of(orderResponse), response);
+
+        verify(userRepository, times(1)).findById(Mockito.any(String.class));
+        verify(orderRepository, times(1)).findAll();
+    }
 }

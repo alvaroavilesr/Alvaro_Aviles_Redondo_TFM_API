@@ -7,6 +7,7 @@ import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrdersNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNameNotValid;
 import es.upm.tfm.adapters.mysqldb.exception.user.UserNotFoundException;
+import es.upm.tfm.adapters.mysqldb.response.ItemOrderResponse;
 import es.upm.tfm.adapters.mysqldb.response.OrderResponse;
 import es.upm.tfm.domain.services.OrderService;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -158,5 +161,57 @@ class OrderControllerTest {
         assertEquals(orderResponse, response.getBody());
 
         verify(orderService, times(1)).findById(1L);
+    }
+
+    @Test
+    void testGetAllOrdersOfAnUserUserNotFound() throws UserNotFoundException, OrdersNotFoundException, UserNameNotValid {
+
+        when(orderService.getAllOrdersOfAnUser("User1")).thenThrow(UserNotFoundException.class);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            orderController.getAllOrdersOfAnUser("User1");
+        });
+
+        verify(orderService, times(1)).getAllOrdersOfAnUser("User1");
+    }
+
+    @Test
+    void testGetAllOrdersOfAnUserOrdersNotFound() throws UserNotFoundException, OrdersNotFoundException, UserNameNotValid {
+
+        when(orderService.getAllOrdersOfAnUser("User1")).thenThrow(OrdersNotFoundException.class);
+
+        Assertions.assertThrows(OrdersNotFoundException.class, () -> {
+            orderController.getAllOrdersOfAnUser("User1");
+        });
+
+        verify(orderService, times(1)).getAllOrdersOfAnUser("User1");
+    }
+
+    @Test
+    void testGetAllOrdersOfAnUserUserNameNotValid() throws UserNotFoundException, OrdersNotFoundException, UserNameNotValid {
+
+        when(orderService.getAllOrdersOfAnUser("User1")).thenThrow(UserNameNotValid.class);
+
+        Assertions.assertThrows(UserNameNotValid.class, () -> {
+            orderController.getAllOrdersOfAnUser("User1");
+        });
+
+        verify(orderService, times(1)).getAllOrdersOfAnUser("User1");
+    }
+
+    @Test
+    void testGetAllOrdersOfAnUser() throws UserNotFoundException, OrdersNotFoundException, UserNameNotValid {
+
+        Set<ItemOrderResponse> itemOrders = new HashSet<>();
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, itemOrders);
+
+        when(orderService.getAllOrdersOfAnUser("User1")).thenReturn(List.of(orderResponse));
+
+        ResponseEntity<List<OrderResponse>> response = orderController.getAllOrdersOfAnUser("User1");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(List.of(orderResponse), response.getBody());
+
+        verify(orderService, times(1)).getAllOrdersOfAnUser("User1");
     }
 }
