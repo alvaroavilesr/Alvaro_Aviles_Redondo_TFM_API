@@ -1,6 +1,7 @@
 package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
+import es.upm.tfm.adapters.mysqldb.dto.OrderUpdateDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
@@ -44,5 +45,9 @@ public class OrderService {
 
     public OrderResponse deleteById(Long id) throws OrderNotFoundException {
         return this.orderPersistence.deleteById(id);
+    }
+
+    public OrderResponse updateOrder(OrderUpdateDTO orderUpdateDTO, Long id) throws OrderNotFoundException {
+        return this.orderPersistence.updateOrder(orderUpdateDTO, id);
     }
 }
