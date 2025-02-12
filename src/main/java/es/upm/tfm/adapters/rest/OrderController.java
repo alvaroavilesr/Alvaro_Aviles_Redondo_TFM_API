@@ -70,4 +70,11 @@ public class OrderController {
     public ResponseEntity<OrderResponse> findById(@PathVariable Long id) throws OrderNotFoundException {
         return new ResponseEntity<>(orderService.findById(id), HttpStatus.OK);
     }
+
+    @Operation(summary = "CGET HTTP method endpoint for getting all orders of a determined user - [ADMIN][VENDOR][USER]")
+    @GetMapping("/orders/{userName}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<List<OrderResponse>> getAllOrdersOfAnUser(@PathVariable String userName) throws OrdersNotFoundException, UserNotFoundException, UserNameNotValid {
+        return new ResponseEntity<>(orderService.getAllOrdersOfAnUser(userName), HttpStatus.OK);
+    }
 }

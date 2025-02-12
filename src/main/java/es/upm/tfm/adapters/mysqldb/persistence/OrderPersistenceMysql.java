@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class OrderPersistenceMysql implements OrderPersistence {
@@ -117,5 +118,29 @@ public class OrderPersistenceMysql implements OrderPersistence {
                 item -> Math.toIntExact(item.getAmount())
         ).sum());
         return orderResponse;
+    }
+
+    @Transactional
+    public List<OrderResponse> getAllOrdersOfAnUser(String userName) throws UserNotFoundException, OrdersNotFoundException, UserNameNotValid {
+        UserEntity user = userRepository.findById(userName).orElseThrow(() -> new UserNotFoundException(userName));
+        if(user.getRole().isEmpty()){
+            throw new UserNameNotValid(userName);
+        }
+        List<OrderEntity> orders = orderRepository.findAll();
+
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(order -> modelMapper.map(order, OrderResponse.class))
+                .filter(orderResponse -> Objects.equals(orderResponse.getUserName(), user.getUserName()))
+                .toList();
+        if (orderResponses.isEmpty()){
+            throw new OrdersNotFoundException();
+        }
+        orderResponses.forEach(orderResponse -> orderResponse.setPrice(
+                orderResponse.getItemsOrder().stream().mapToDouble(item -> item.getAmount() * item.getItem().getPrice()).sum())
+        );
+        orderResponses.forEach(orderResponse -> orderResponse.setItemAmount(orderResponse.getItemsOrder().stream().mapToInt(
+                item -> Math.toIntExact(item.getAmount())
+        ).sum()));
+        return orderResponses;
     }
 }
