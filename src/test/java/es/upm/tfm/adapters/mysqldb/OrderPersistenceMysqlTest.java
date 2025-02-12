@@ -282,4 +282,37 @@ class OrderPersistenceMysqlTest {
         verify(userRepository, times(1)).findById(Mockito.any(String.class));
         verify(orderRepository, times(1)).findAll();
     }
+
+    @Test
+    void DeleteOrderOrderNotFound() throws OrderNotFoundException {
+
+        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(OrderNotFoundException.class, () -> {
+            orderPersistenceMysql.deleteById(1L);
+        });
+
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void DeleteOrder() throws OrderNotFoundException {
+
+        Set<RoleEntity> roles = new HashSet<>();
+        RoleEntity role = new RoleEntity("Admin", "Role for admins");
+        roles.add(role);
+
+        UserEntity user = new UserEntity("User1", "Alvaro", "Avilés", roles);
+        OrderEntity order = new OrderEntity(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", user, new HashSet<>());
+        Set<ItemOrderResponse> itemOrders = new HashSet<>();
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, itemOrders);
+
+        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        OrderResponse response = orderPersistenceMysql.deleteById(1L);
+
+        Assertions.assertEquals(orderResponse, response);
+
+        verify(orderRepository, times(1)).findById(1L);
+    }
 }

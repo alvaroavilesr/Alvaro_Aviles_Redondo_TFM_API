@@ -214,4 +214,31 @@ class OrderControllerTest {
 
         verify(orderService, times(1)).getAllOrdersOfAnUser("User1");
     }
+
+    @Test
+    void testDeleteOrderOrderNotFound() throws OrderNotFoundException {
+
+        when(orderService.deleteById(1L)).thenThrow(OrderNotFoundException.class);
+
+        Assertions.assertThrows(OrderNotFoundException.class, () -> {
+            orderController.deleteById(1L);
+        });
+
+        verify(orderService, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteOrder() throws OrderNotFoundException {
+
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, null);
+
+        when(orderService.deleteById(1L)).thenReturn(orderResponse);
+
+        ResponseEntity<OrderResponse> response = orderController.deleteById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(orderResponse, response.getBody());
+
+        verify(orderService, times(1)).deleteById(1L);
+    }
 }

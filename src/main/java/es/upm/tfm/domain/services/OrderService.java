@@ -41,4 +41,8 @@ public class OrderService {
     public List<OrderResponse> getAllOrdersOfAnUser(String userName) throws OrdersNotFoundException, UserNotFoundException, UserNameNotValid {
         return this.orderPersistence.getAllOrdersOfAnUser(userName);
     }
+
+    public OrderResponse deleteById(Long id) throws OrderNotFoundException {
+        return this.orderPersistence.deleteById(id);
+    }
 }

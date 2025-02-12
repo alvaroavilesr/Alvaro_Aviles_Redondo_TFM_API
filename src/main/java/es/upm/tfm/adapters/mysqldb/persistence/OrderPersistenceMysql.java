@@ -143,4 +143,14 @@ public class OrderPersistenceMysql implements OrderPersistence {
         ).sum()));
         return orderResponses;
     }
+
+    @Transactional
+    public OrderResponse deleteById(Long id) throws OrderNotFoundException {
+        OrderEntity order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+        OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+        orderResponse.setPrice(order.getItemsOrder().stream().mapToDouble(item -> item.getItem().getPrice() * item.getAmount()).sum());
+        orderResponse.setItemAmount(order.getItemsOrder().stream().mapToInt(item -> Math.toIntExact(item.getAmount())).sum());
+        orderRepository.deleteById(id);
+        return orderResponse;
+    }
 }

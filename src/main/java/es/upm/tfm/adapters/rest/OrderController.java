@@ -77,4 +77,16 @@ public class OrderController {
     public ResponseEntity<List<OrderResponse>> getAllOrdersOfAnUser(@PathVariable String userName) throws OrdersNotFoundException, UserNotFoundException, UserNameNotValid {
         return new ResponseEntity<>(orderService.getAllOrdersOfAnUser(userName), HttpStatus.OK);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order successfully deleted"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "DELETE HTTP method endpoint for deleting an order - [ADMIN][VENDOR][USER]")
+    @DeleteMapping("/order/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<OrderResponse> deleteById(@PathVariable Long id) throws OrderNotFoundException{
+        return new ResponseEntity<>(orderService.deleteById(id), HttpStatus.OK);
+    }
 }
