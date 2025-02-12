@@ -22,5 +22,7 @@ public interface OrderPersistence {
     OrderResponse findById(Long id) throws OrderNotFoundException;
 
     List<OrderResponse> getAllOrdersOfAnUser(String userName) throws OrdersNotFoundException, UserNotFoundException, UserNameNotValid;
+
+    OrderResponse deleteById(Long id) throws OrderNotFoundException;
 }
 

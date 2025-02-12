@@ -184,4 +184,26 @@ class OrderPersistenceTest {
 
         assertEquals(List.of(orderResponse), response);
     }
+
+    @Test
+    void testDeleteOrderOrderNotFound() throws OrderNotFoundException {
+
+        when(orderPersistence.deleteById(1L)).thenThrow(OrderNotFoundException.class);
+
+        Assertions.assertThrows(OrderNotFoundException.class, () -> {
+            orderService.deleteById(1L);
+        });
+    }
+
+    @Test
+    void testDeleteOrder() throws OrderNotFoundException {
+
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, null);
+
+        when(orderPersistence.deleteById(1L)).thenReturn(orderResponse);
+
+        OrderResponse response = orderService.deleteById(1L);
+
+        assertEquals(orderResponse, response);
+    }
 }
