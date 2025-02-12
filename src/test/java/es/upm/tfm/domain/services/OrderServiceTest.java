@@ -1,6 +1,7 @@
 package es.upm.tfm.domain.services;
 
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
+import es.upm.tfm.adapters.mysqldb.dto.OrderUpdateDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
@@ -200,6 +201,31 @@ class OrderServiceTest {
         when(orderPersistence.deleteById(1L)).thenReturn(orderResponse);
 
         OrderResponse response = orderService.deleteById(1L);
+
+        assertEquals(orderResponse, response);
+    }
+
+    @Test
+    void testUpdateOrderOrderNotFound() throws OrderNotFoundException {
+
+        OrderUpdateDTO orderUpdateDTO = new OrderUpdateDTO();
+
+        when(orderPersistence.updateOrder(orderUpdateDTO, 1L)).thenThrow(OrderNotFoundException.class);
+
+        Assertions.assertThrows(OrderNotFoundException.class, () -> {
+            orderService.updateOrder(orderUpdateDTO, 1L);
+        });
+    }
+
+    @Test
+    void testUpdateOrder() throws OrderNotFoundException {
+
+        OrderUpdateDTO orderUpdateDTO = new OrderUpdateDTO();
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", "User1", 0, 0, null);
+
+        when(orderPersistence.updateOrder(orderUpdateDTO, 1L)).thenReturn(orderResponse);
+
+        OrderResponse response = orderService.updateOrder(orderUpdateDTO, 1L);
 
         assertEquals(orderResponse, response);
     }

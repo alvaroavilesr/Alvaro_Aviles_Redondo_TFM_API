@@ -1,6 +1,7 @@
 package es.upm.tfm.adapters.mysqldb.persistence;
 
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
+import es.upm.tfm.adapters.mysqldb.dto.OrderUpdateDTO;
 import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
 import es.upm.tfm.adapters.mysqldb.entity.ItemOrderEntity;
 import es.upm.tfm.adapters.mysqldb.entity.OrderEntity;
@@ -151,6 +152,22 @@ public class OrderPersistenceMysql implements OrderPersistence {
         orderResponse.setPrice(order.getItemsOrder().stream().mapToDouble(item -> item.getItem().getPrice() * item.getAmount()).sum());
         orderResponse.setItemAmount(order.getItemsOrder().stream().mapToInt(item -> Math.toIntExact(item.getAmount())).sum());
         orderRepository.deleteById(id);
+        return orderResponse;
+    }
+
+    @Transactional
+    public OrderResponse updateOrder(OrderUpdateDTO orderUpdateDTO, Long id) throws OrderNotFoundException {
+        OrderEntity order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+        if(orderUpdateDTO.getDate() != null){
+            order.setDate(orderUpdateDTO.getDate());
+        }
+        if(orderUpdateDTO.getAddress() != null) {
+            order.setAddress(orderUpdateDTO.getAddress());
+        }
+        OrderEntity savedOrder = orderRepository.save(order);
+        OrderResponse orderResponse = modelMapper.map(savedOrder, OrderResponse.class);
+        orderResponse.setPrice(savedOrder.getItemsOrder().stream().mapToDouble(item -> item.getItem().getPrice() * item.getAmount()).sum());
+        orderResponse.setItemAmount(savedOrder.getItemsOrder().stream().mapToInt(item -> Math.toIntExact(item.getAmount())).sum());
         return orderResponse;
     }
 }

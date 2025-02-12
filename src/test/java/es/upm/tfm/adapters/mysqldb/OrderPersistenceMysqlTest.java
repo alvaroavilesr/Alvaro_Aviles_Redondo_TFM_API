@@ -1,7 +1,11 @@
 package es.upm.tfm.adapters.mysqldb;
 
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
-import es.upm.tfm.adapters.mysqldb.entity.*;
+import es.upm.tfm.adapters.mysqldb.dto.OrderUpdateDTO;
+import es.upm.tfm.adapters.mysqldb.entity.ItemEntity;
+import es.upm.tfm.adapters.mysqldb.entity.OrderEntity;
+import es.upm.tfm.adapters.mysqldb.entity.RoleEntity;
+import es.upm.tfm.adapters.mysqldb.entity.UserEntity;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
@@ -310,6 +314,44 @@ class OrderPersistenceMysqlTest {
         Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
         OrderResponse response = orderPersistenceMysql.deleteById(1L);
+
+        Assertions.assertEquals(orderResponse, response);
+
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void UpdateOrderOrderNotFound() throws OrderNotFoundException {
+
+        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(OrderNotFoundException.class, () -> {
+            orderPersistenceMysql.updateOrder(new OrderUpdateDTO(), 1L);
+        });
+
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void UpdateOrder() throws OrderNotFoundException {
+
+        Set<RoleEntity> roles = new HashSet<>();
+        RoleEntity role = new RoleEntity("Admin", "Role for admins");
+        roles.add(role);
+
+        UserEntity user = new UserEntity("User1", "Alvaro", "Avilés", roles);
+        OrderEntity order = new OrderEntity(1L, new Date(-2023), "c/Alcalá 45, Madrid, 28001", user, new HashSet<>());
+        OrderEntity orderReturn = new OrderEntity(1L, new Date(-2020), "New value", user, new HashSet<>());
+
+        Set<ItemOrderResponse> itemOrders = new HashSet<>();
+        OrderResponse orderResponse = new OrderResponse(1L, new Date(-2020), "New value", "User1", 0, 0, itemOrders);
+
+        OrderUpdateDTO orderUpdateDTO = new OrderUpdateDTO(new Date(-2020), "New value");
+
+        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        Mockito.when(orderRepository.save(Mockito.any(OrderEntity.class))).thenReturn(orderReturn);
+
+        OrderResponse response = orderPersistenceMysql.updateOrder(orderUpdateDTO, 1L);
 
         Assertions.assertEquals(orderResponse, response);
 

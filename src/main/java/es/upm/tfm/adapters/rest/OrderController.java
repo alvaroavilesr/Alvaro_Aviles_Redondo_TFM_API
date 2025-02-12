@@ -1,6 +1,7 @@
 package es.upm.tfm.adapters.rest;
 
 import es.upm.tfm.adapters.mysqldb.dto.OrderDTO;
+import es.upm.tfm.adapters.mysqldb.dto.OrderUpdateDTO;
 import es.upm.tfm.adapters.mysqldb.exception.item.ItemNotFoundException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderItemIdsAndMountsNotValidException;
 import es.upm.tfm.adapters.mysqldb.exception.order.OrderNotFoundException;
@@ -88,5 +89,17 @@ public class OrderController {
     @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
     public ResponseEntity<OrderResponse> deleteById(@PathVariable Long id) throws OrderNotFoundException{
         return new ResponseEntity<>(orderService.deleteById(id), HttpStatus.OK);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order successfully updated"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Operation(summary = "PUT HTTP method endpoint for updating the data of an order - [ADMIN][VENDOR][USER]")
+    @PutMapping("/order/{id}")
+    @PreAuthorize("hasRole('Admin') or hasRole('Vendor') or hasRole('User')")
+    public ResponseEntity<OrderResponse> updateOrder(@Valid @RequestBody OrderUpdateDTO orderUpdateDTO, @PathVariable Long id) throws OrderNotFoundException{
+        return new ResponseEntity<>(orderService.updateOrder(orderUpdateDTO, id), HttpStatus.OK);
     }
 }
