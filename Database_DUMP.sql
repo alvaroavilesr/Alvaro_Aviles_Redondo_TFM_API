@@ -77,7 +77,7 @@ INSERT INTO `item_order` (`item_order_id`, `amount`, `item_id`) VALUES
 --
 -- Volcado de datos para la tabla `orders_items_order`
 --
-INSERT INTO `orders_items_order` (`order_order_id`, `items_order_item_order_id`) VALUES
+INSERT INTO `orders_items_order` (`order_entity_order_id`, `items_order_item_order_id`) VALUES
 (1, 1),
 (1, 2),
 (2, 3),
