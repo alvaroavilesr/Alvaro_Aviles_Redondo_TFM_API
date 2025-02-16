@@ -13,7 +13,6 @@ services:
       - "6033:3306"
     volumes:
       - dbdata:/var/lib/mysql
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: PhpMyAdmin-container
@@ -26,6 +25,22 @@ services:
     restart: always
     ports:
       - "8081:80"
-
+  app:
+    container_name: Spring-Api-Container
+    build: .
+    depends_on:
+      - db
+    restart: on-failure
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db/app_db
+      - SPRING_DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_DATABASE-PLATFORM=org.hibernate.dialect.MySQL8Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRINGDOC_API-DOCS_PATH=/api-docs
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    ports:
+      - "8082:8082"
 volumes:
   dbdata:
