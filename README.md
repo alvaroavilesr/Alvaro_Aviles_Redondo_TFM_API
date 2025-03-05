@@ -23,13 +23,12 @@ Sigue estos pasos para arrancar la aplicación en local:
 3. Ejecuta el comando "docker-compose build --no-cache" y después ejecuta "docker-compose up -d".
 4. El contenedor de la api va a fallar hasta que, a través del panel PhpMyAdmin (http://localhost:8081/), una nueva base de datos app_db sea creada manualmente.
 5. Cuando todos los contenedores estén levantados, ejecuta el DUMP inicial de BBDD a través del panel de PhpMyAdmin (http://localhost:8081/).
-6. Todo está listo para ejecutar la aplicación, que ahora es accesible a través del link http://localhost:8090/
 
 ## Acceso a la aplicación 🌐
 
-Una vez realizados los pasos de arranque, la aplicación será accesible. Habrá varios puntos de acceso, pero solo el front-end web será accesible para el usuario final:
+Una vez realizados los pasos de arranque de ambos repositorios, la aplicación será accesible. Habrá varios puntos de acceso, pero solo el front-end web será accesible para el usuario final:
 
-- Front-end web: http://localhost:8090/
+- Front-end web: http://localhost:4200/
 
 - SwaggerUI: http://localhost:8082/swagger-ui/index.html
 
@@ -47,7 +46,7 @@ Una vez realizados los pasos de arranque, la aplicación será accesible. Habrá
 
 ### Aplicación Web 
 
-As an initial database DUMP has been made, the user passwords are encypted, so here is the list of user - password:
+Como se ha realizado un volcado inicial de base de datos, las contraseñas estaban encriptadas. Aqui está la lista de usuarios - contraseñas:
 
 - User1 - user@pass
 - User2 - user@pass
